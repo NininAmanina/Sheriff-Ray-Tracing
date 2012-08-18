@@ -4,13 +4,16 @@ package glaytraser.math;
  * This class is the superclass of all triples which we wish to use:  Points, Vectors, and Rows in a Matrix
  */
 public abstract class AbstractTriple {
+    public AbstractTriple() {
+    }
+    
     // The data for the triple
     /*package*/ final double [] value = new double [4];
 
     // Scratch space for multiplying matrices
     private final double [] scratch = new double [4];
 
-    public void premultiply(Matrix m) {
+    public void multiply(Matrix m) {
         // Copy our current values into the scratch space for the multiplication
         for(int i = 0; i < 3; ++i) {
             scratch[i] = dot(m.getRow(i));
@@ -24,6 +27,12 @@ public abstract class AbstractTriple {
         }
         value[i] = d;
     }
+    
+    // Note that this is not type-safe -- we can initialise a Point with the XYZ values of
+    // a vector, et al.
+    public void init(AbstractTriple t) {
+        set(t.value[0], t.value[1], t.value[2]);
+    }
 
     public void set(double d0, double d1, double d2) {
         value[0] = d0;
@@ -36,5 +45,11 @@ public abstract class AbstractTriple {
                t.value[1] * value[1] +
                t.value[2] * value[2] +
                t.value[3] * value[3]; 
+    }
+
+    public void clear() {
+        for(int i = 0; i < 3; ++i) {
+            value[i] = 0.0;
+        }
     }
 }
