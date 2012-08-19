@@ -27,7 +27,7 @@ public abstract class AbstractTriple {
         }
         value[i] = d;
     }
-    
+
     // Note that this is not type-safe -- we can initialise a Point with the XYZ values of
     // a vector, et al.
     public void set(AbstractTriple t) {

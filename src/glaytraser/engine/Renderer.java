@@ -33,8 +33,16 @@ public class Renderer {
         Ray ray = new Ray();
         Point scanlineStart = new Point();
         Point scanlinePoint = new Point();
+        // Make these unit vectors
+        // TODO:  Convert the unit vectors into the co-ordinate system of the camera.
         Vector verticalVector = new Vector(0.0, -1.0, 0.0);
         Vector horizontalVector = new Vector(1.0, 0.0, 0.0);
+
+        double halfWidth = (double) (width >> 1);
+        double halfHeight = (double) (height >> 1);
+        double distanceToPixelGrid = halfWidth / Math.tan(fov / 2.0);
+        // TODO:  Find the top-left pixel's centre (move halfwidth - 0.5 pixels to the left,
+        // and halfHeight = 0.5 pixels up from the centre of the pixel grid
         // TODO:  initialise transformation matrices at each level
         // TODO:  initialise Ray for each pixel
         for(int i = 0; i < height; ++i) {
