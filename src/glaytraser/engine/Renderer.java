@@ -1,12 +1,17 @@
 package glaytraser.engine;
 
-import glaytraser.math.*;
+import glaytraser.math.Matrix;
+import glaytraser.math.Point;
+import glaytraser.math.Vector;
 
 public class Renderer {
     private static Node root = new Node();
     private static Point camera = new Point();
     private static Matrix cameraGnomon = new Matrix();
-    
+    private static int width = 1024;
+    private static int height = 768;
+    private static double fov = 120.0;
+
     /**
      * @param args
      */
@@ -20,19 +25,31 @@ public class Renderer {
 //           Renderer.renderScene()) {
 //        }
     }
-    
+
     static boolean renderScene() {
+        // TODO:  move some of this into the scene definition file
+
         Result result = new Result();
         Ray ray = new Ray();
+        Point scanlineStart = new Point();
+        Point scanlinePoint = new Point();
+        Vector verticalVector = new Vector(0.0, -1.0, 0.0);
+        Vector horizontalVector = new Vector(1.0, 0.0, 0.0);
         // TODO:  initialise transformation matrices at each level
         // TODO:  initialise Ray for each pixel
-//        for() {
-            result.init();
-            root.intersect(result, ray, true);
-            if(result.getT() < Integer.MAX_VALUE) {
-                // TODO:  Lighting calculations using
+        for(int i = 0; i < height; ++i) {
+            scanlinePoint.set(scanlineStart);
+            for(int j = 0; j < width; ++j) {
+                result.init();
+                ray.getVector().set(scanlinePoint, ray.getPoint());
+                root.intersect(result, ray, true);
+                if(result.getT() < Double.MAX_VALUE) {
+                    // TODO:  Lighting calculations using
+                }
+                scanlinePoint.add(horizontalVector);
             }
-//        }
+            scanlineStart.add(verticalVector);
+        }
         return false;
     }
 }

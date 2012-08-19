@@ -2,7 +2,7 @@ package glaytraser.math;
 
 /**
  * 
- * @author devfloater3
+ * @author G & S
  *
  */
 public class Normal extends AbstractTriple {

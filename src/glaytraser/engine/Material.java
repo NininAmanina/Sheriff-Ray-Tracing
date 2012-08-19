@@ -2,7 +2,7 @@ package glaytraser.engine;
 
 /**
  * 
- * @author devfloater3
+ * @author G & S
  *
  * This class contains the Material properties of a primitive.
  */

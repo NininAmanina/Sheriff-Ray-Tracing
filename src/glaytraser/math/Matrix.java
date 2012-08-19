@@ -2,7 +2,7 @@ package glaytraser.math;
 
 /**
  * 
- * @author devfloater3
+ * @author G & S
  *
  * This class represents a matrix for premultiplying vectors and points and post-multiplying Normals.
  */

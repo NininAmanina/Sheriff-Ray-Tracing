@@ -30,7 +30,7 @@ public abstract class AbstractTriple {
     
     // Note that this is not type-safe -- we can initialise a Point with the XYZ values of
     // a vector, et al.
-    public void init(AbstractTriple t) {
+    public void set(AbstractTriple t) {
         set(t.value[0], t.value[1], t.value[2]);
     }
 

@@ -15,8 +15,8 @@ public class Ray {
     }
 
     public void init(Ray ray) {
-        m_point.init(ray.getPoint());
-        m_vector.init(ray.getVector());
+        m_point.set(ray.getPoint());
+        m_vector.set(ray.getVector());
     }
 
     public void transform(Matrix txMatrix) {

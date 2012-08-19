@@ -30,6 +30,6 @@ public class Result {
     public void init() {
         m_material = null;
         m_normal.clear();
-        m_t = Integer.MAX_VALUE;
+        m_t = Double.MAX_VALUE;
     }
 }
