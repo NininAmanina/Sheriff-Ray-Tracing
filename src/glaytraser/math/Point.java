@@ -11,9 +11,12 @@ public class Point extends AbstractTriple {
         value[3] = 1.0;
     }
 
-    public void add(Vector v) {
-        for(int i = 0; i < 4; ++i) {
-            value[i] += v.value[i];
-        }
+    public Point(double d0, double d1, double d2) {
+        this();
+        set(d0, d1, d2);
+    }
+
+    public Point(Point p) {
+        this(p.value[0], p.value[1], p.value[2]);
     }
 }

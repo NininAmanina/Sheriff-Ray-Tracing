@@ -12,6 +12,11 @@ public class Node {
     Material m_material;
     
     public Node() {
+        
+    }
+    
+    public Node(Point p) {
+        
     }
 
     // This must be overridden by primitives.
