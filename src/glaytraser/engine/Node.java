@@ -3,8 +3,6 @@ package glaytraser.engine;
 import glaytraser.math.*;
 
 public class Node {
-    private static final double EPSILON = 0.0000001;
-
     Matrix m_txMatrix = new Matrix();
     Ray m_txRay = new Ray();
     Normal m_scratchNormal = new Normal();

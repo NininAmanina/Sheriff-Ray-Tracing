@@ -2,9 +2,11 @@ package glaytraser.engine;
 
 import glaytraser.math.Point;
 import glaytraser.math.Vector;
+import glaytraser.primitive.Sphere;
 
 public class Renderer {
-    private static Node root = new Node();
+    private static Node root = new Sphere(new Point(0, 0, 800), 400);
+    
     // The view location
     private static Point camera = new Point(0, 0, -800);
     private static Vector cameraDirection = new Vector(0, 0, 1);
