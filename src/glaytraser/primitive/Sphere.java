@@ -9,40 +9,49 @@ import glaytraser.math.Vector;
 
 public class Sphere extends Node {
     private double m_radius;
-    private Point m_center;
-    
+    private Point m_centre;
+
     private Point scratchPoint = new Point();
     private Vector scratchVector = new Vector();
-    
+
     public Sphere(Point p, double radius) {
         super(p);
-        this.m_radius = radius; 
+        m_radius = radius; 
     }
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
     public boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+        // Simplify the math by dividing each of the arguments by 2.
+        // This makes it slightly faster _and_ slightly more stable.
         double a = ray.getVector().dot(ray.getVector());
-        Vector pc = new Vector(m_center, ray.getPoint());
-        double b = 2*ray.getVector().dot(pc);
+        Vector pc = new Vector(m_centre, ray.getPoint());
+        double b = ray.getVector().dot(pc); // * 2;
         double c = pc.dot(pc);
-        
-        double discriminant = b*b - 4*a*c;
-        if(discriminant < 0.0) {
+
+        double discriminant = b * b - a * c;// * 4;
+        if(discriminant < -Utils.EPSILON) {
             return false;
         }
-        
-        double t1 = (b - Math.sqrt(discriminant)) / (2 * a);
-        double t2 = (b + Math.sqrt(discriminant)) / (2 * a);
+        // If the discriminant's magnitude is less than EPSILON, then make it 0.
+        // Otherwise, take its square root and cache the value.
+        double sqrtDisc;
+        if(discriminant < Utils.EPSILON) {
+            sqrtDisc = 0;
+        } else {
+            sqrtDisc = Math.sqrt(discriminant);
+        }
+        // TODO:  Make the math below a bit more numerically stable.
+        double t1 = (b - sqrtDisc) / a; // * 0.5;
+        double t2 = (b + sqrtDisc) / a; // * 0.5;
         double t = Math.min(Math.max(t1, 0), Math.max(t2, 0));
         if(t > Utils.EPSILON && t < result.getT()) {
             result.setT(t);
-            scratchPoint.set(ray.getPoint());
-            scratchVector.set(ray.getVector());
-            scratchVector.multiply(t);
-            scratchPoint.add(scratchVector);
-            // TODO: Transform the normal into the world space
-            result.getNormal().set(m_center, scratchPoint);
+            // TODO:  Transform the normal into the world space.
+            // TODO:  Use generics to avoid the explicit cast below.
+            result.getNormal().set(m_centre,
+                (Point) scratchPoint.set(ray.getPoint()).add(
+                    scratchVector.set(ray.getVector()).multiply(t)));
             // TODO: Set the material property for the primitive
             return true;
         }
@@ -50,11 +59,11 @@ public class Sphere extends Node {
     }
     
     public Point getCenter() {
-        return m_center;
+        return m_centre;
     }
 
     public void setCenter(Point center) {
-        this.m_center = center;
+        m_centre = center;
     }
 
     public double getRadius() {
@@ -62,6 +71,6 @@ public class Sphere extends Node {
     }
 
     public void setRadius(double radius) {
-        this.m_radius = radius;
+        m_radius = radius;
     }
 }

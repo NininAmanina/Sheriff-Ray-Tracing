@@ -32,6 +32,8 @@ public class Renderer {
     }
 
     static boolean renderScene() {
+        Point scratchPoint = new Point();
+        Vector scratchVector = new Vector();
         // TODO:  move some of this into the scene definition file
         Result result = new Result();
         Ray ray = new Ray();
@@ -55,8 +57,10 @@ public class Renderer {
             .add(temp.set(cameraUp).multiply(halfHeight - 0.5));
         Point scanlinePoint = new Point();
 
+        int [][] pixel = new int [height] [];
         // TODO:  initialise transformation matrices at each level
         for(int i = 0; i < height; ++i) {
+            pixel[i] = new int [width];
             scanlinePoint.set(scanlineStart);
             for(int j = 0; j < width; ++j) {
                 // Initialise Ray and Result for each pixel
@@ -65,7 +69,13 @@ public class Renderer {
 
                 root.intersect(result, ray, true);
                 if(result.getT() < Double.MAX_VALUE) {
-                    // TODO:  Lighting calculations using
+                    // Lighting calculations
+                    pixel[i][j] = Lights.doLighting(
+                        (Point) scratchPoint.set(ray.getPoint())
+                                            .add(scratchVector.set(ray.getVector())
+                                                              .multiply(result.getT())),
+                        root,
+                        null); 
                 }
                 scanlinePoint.add(horizontalVector);
             }

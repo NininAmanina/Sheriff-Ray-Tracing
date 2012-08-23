@@ -58,14 +58,16 @@ public abstract class AbstractTriple {
 
     // Note that this is not type-safe -- we can initialise a Point with the XYZ values of
     // a vector, et al.
-    public void set(AbstractTriple t) {
+    public AbstractTriple set(AbstractTriple t) {
         set(t.value[0], t.value[1], t.value[2]);
+        return this;
     }
 
-    public void set(double d0, double d1, double d2) {
+    public AbstractTriple set(double d0, double d1, double d2) {
         value[0] = d0;
         value[1] = d1;
         value[2] = d2;
+        return this;
     }
 
     public AbstractTriple add(Vector v) {
