@@ -2,15 +2,16 @@ package glaytraser.math;
 
 import glaytraser.math.AbstractTriple;
 
-public class Row extends AbstractTriple {
+public class Row extends Vector {
     Row() {
     }
 
-    public void set(int i, double d) {
+    public AbstractTriple set(int i, double d) {
         if(i < 0 || i > 3) {
             throw new IllegalArgumentException("index " + i + "is out of bounds");
         }
         value[i] = d;
+        return this;
     }
     
     public void set(double d0, double d1, double d2, double d3) {

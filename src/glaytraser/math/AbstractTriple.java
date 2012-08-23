@@ -4,33 +4,56 @@ package glaytraser.math;
  * This class is the superclass of all triples which we wish to use:  Points, Vectors, and Rows in a Matrix
  */
 public abstract class AbstractTriple {
-    
+
     // The data for the triple
     /*package*/ final double [] value = new double [4];
 
     // Scratch space for multiplying matrices
     private final double [] scratch = new double [4];
 
+    /**
+     * Declare a null AbstractTriple.
+     */
     public AbstractTriple() {
     }
 
-    public AbstractTriple(double i, double j, double k) {
-        set(i, j, k);
+    /**
+     * Define a triple of some sort via x, y, and z.
+     * @param x
+     * @param y
+     * @param z
+     */
+    public AbstractTriple(double x, double y, double z) {
+        set(x, y, z);
     }
-    
+
+    /**
+     * Multiply this AbstractTriple by a Matrix.
+     *
+     * By default, it is premupltipled.  This behaviour may be overridden if necessary.
+     * @param m The matrix.
+     */
     public void multiply(Matrix m) {
         // Copy our current values into the scratch space for the multiplication
         for(int i = 0; i < 3; ++i) {
-            scratch[i] = dot(m.getRow(i));
+            scratch[i] = m.getRow(i).dot(this);
         }
         System.arraycopy(scratch, 0, value, 0, 4);
     }
 
-    public void set(int i, double d) {
+    /**
+     * Set the ith component of this AbstractTriple.
+     *
+     * @param i The index ([0..2])
+     * @param d The value
+     * @return A reference to this vector, for chaining purposes
+     */
+    public AbstractTriple set(int i, double d) {
         if(i < 0 || i > 2) {
             throw new IllegalArgumentException("index " + i + "is out of bounds");
         }
         value[i] = d;
+        return this;
     }
 
     // Note that this is not type-safe -- we can initialise a Point with the XYZ values of
@@ -45,17 +68,11 @@ public abstract class AbstractTriple {
         value[2] = d2;
     }
 
-    public void add(Vector v) {
+    public AbstractTriple add(Vector v) {
         for(int i = 0; i < 3; ++i) {
             value[i] += v.value[i];
         }
-    }
-    
-    public double dot(AbstractTriple t) {
-        return t.value[0] * value[0] +
-               t.value[1] * value[1] +
-               t.value[2] * value[2] +
-               t.value[3] * value[3]; 
+        return this;
     }
 
     public void clear() {
