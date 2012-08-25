@@ -3,13 +3,13 @@ package glaytraser.engine;
 import glaytraser.math.*;
 
 public class Ray {
-    private Vector m_vector; // should be a unit vector
-    private Point m_point;
-    
+    private Vector m_vector = new Vector(); // should be a unit vector when the ray is cast
+    private Point m_point = new Point();
+
     public Vector getVector() {
         return m_vector;
     }
-    
+
     public Point getPoint() {
         return m_point;
     }

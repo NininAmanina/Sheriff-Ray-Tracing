@@ -16,7 +16,8 @@ public class Sphere extends Node {
 
     public Sphere(Point p, double radius) {
         super(p);
-        m_radius = radius; 
+        m_centre = p;
+        m_radius = radius;
     }
 
     // This must be overridden by primitives.
@@ -52,12 +53,12 @@ public class Sphere extends Node {
             result.getNormal().set(m_centre,
                 (Point) scratchPoint.set(ray.getPoint()).add(
                     scratchVector.set(ray.getVector()).multiply(t)));
-            // TODO: Set the material property for the primitive
+            // TODO:  Set the material property for the primitive
             return true;
         }
         return false;
     }
-    
+
     public Point getCenter() {
         return m_centre;
     }

@@ -8,13 +8,11 @@ public class Node {
     Normal m_scratchNormal = new Normal();
     Node [] m_child = new Node [0];
     Material m_material;
-    
+
     public Node() {
-        
     }
-    
+
     public Node(Point p) {
-        
     }
 
     // This must be overridden by primitives.
@@ -25,7 +23,7 @@ public class Node {
         the t value, the material properties and the normal must be set at the same time.
         We recommend calculating the normal at any time an intersection is detected.
         We recommend transformimg the normal
-        
+
         double t = 
         if(t > EPSILON && t < result.getT()) {
             result.setT(t)
@@ -43,11 +41,11 @@ public class Node {
                 return true;
             }
         }
-        
+
         // Now do our transformation
         m_txRay.init(ray);
         m_txRay.transform(m_txMatrix);
-        
+
         return rayIntersect(result, m_txRay, calcNormal);
     }
 }

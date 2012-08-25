@@ -3,7 +3,8 @@ package glaytraser.math;
 import glaytraser.math.AbstractTriple;
 
 public class Row extends Vector {
-    Row() {
+    Row(double d1, double d2, double d3, double d4) {
+        set(d1, d2, d3, d4);
     }
 
     public AbstractTriple set(int i, double d) {
@@ -13,7 +14,7 @@ public class Row extends Vector {
         value[i] = d;
         return this;
     }
-    
+
     public void set(double d0, double d1, double d2, double d3) {
         value[0] = d0;
         value[1] = d1;

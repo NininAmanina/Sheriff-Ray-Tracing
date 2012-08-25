@@ -3,14 +3,14 @@ package glaytraser.engine;
 import glaytraser.math.*;
 
 public class Result {
-    private Normal m_normal;
+    private Normal m_normal = new Normal();
     private double m_t;
-    private Material m_material;
-    
+    private Material m_material = new Material();
+
     public Normal getNormal() {
         return m_normal;
     }
-    
+
     public double getT() {
         return m_t;
     }
