@@ -34,6 +34,15 @@ public class Node {
         return false;
     }
 
+    /**
+     * Determine whether a Ray intersects either with this Node or one of its children.
+     *
+     * @param result The t-value (from p + v * t) and the Normal to the surface at the point of intersection.
+     * @param ray The incoming Ray, possibly transformed by the parent to this Node.
+     * @param calcNormal Whether or not to calculate the normal to the surface of this Node.  If false,
+     *        then result is ignored (and may be null).
+     * @return Whether this node or any of its children intersects with this Ray.
+     */
     public final boolean intersect(final Result result, final Ray ray, final boolean calcNormal) {
         // Handle all of the children firstly
         for(int i = 0, ii = m_child.length; i < ii; ++i) {

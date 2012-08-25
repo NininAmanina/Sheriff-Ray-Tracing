@@ -1,15 +1,15 @@
 package glaytraser.engine;
 
-import java.awt.Component;
+import glaytraser.math.Point;
+import glaytraser.math.Vector;
+import glaytraser.primitive.Sphere;
+
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.MemoryImageSource;
 
 import javax.swing.JFrame;
-
-import glaytraser.math.Point;
-import glaytraser.math.Vector;
-import glaytraser.primitive.Sphere;
+import javax.swing.JPanel;
 
 public class Renderer {
     private static Node root = new Sphere(new Point(0, 0, 800), 400);
@@ -44,6 +44,7 @@ public class Renderer {
         // TODO:  move some of this into the scene definition file
         Result result = new Result();
         Ray ray = new Ray();
+        ray.getPoint().set(camera);
         // Make these unit vectors
         // TODO:  Convert the unit vectors into the co-ordinate system of the camera.
         Vector verticalVector = new Vector(cameraUp).multiply(-1);
@@ -69,39 +70,42 @@ public class Renderer {
         for(int r = 0; r < height; ++r) {
             scanlinePoint.set(scanlineStart);
             for(int c = 0; c < width; ++c) {
-                // Initialise Ray and Result for each pixel
-                result.init();
-                ray.getVector().set(scanlinePoint, ray.getPoint()).normalize();
-
-                root.intersect(result, ray, true);
-                if(result.getT() < Double.MAX_VALUE) {
-                    // Lighting calculations
-                    pixel[r * width + c] = Lights.doLighting(
-                        (Point) scratchPoint.set(ray.getPoint())
-                                            .add(scratchVector.set(ray.getVector())
-                                                              .multiply(result.getT())),
-                        root,
-                        null); 
-                }
+//                // Initialise Ray and Result for each pixel
+//                result.init();
+//                ray.getVector().set(scanlinePoint, ray.getPoint()).normalize();
+//
+//                root.intersect(result, ray, true);
+//                if(result.getT() < Double.MAX_VALUE) {
+//                    // Lighting calculations
+//                    pixel[r * width + c] = Lights.doLighting(
+//                        (Point) scratchPoint.set(ray.getPoint())
+//                                            .add(scratchVector.set(ray.getVector())
+//                                                              .multiply(result.getT())),
+//                        root,
+//                        null); 
+//                }
+                pixel[r * width + c] = 255 << 24 | (r % 256) << 16 | (c % 256) << 8;
                 scanlinePoint.add(horizontalVector);
             }
             scanlineStart.add(verticalVector);
         }
         // TODO:  Push a modal dialog
         JFrame frame = new JFrame("GLaytraSer");
-        frame.add(new RayTracerComponent(pixel, width, height));
+        frame.setSize(width, height);
+        frame.add(new RayTracerPanel(pixel, width, height));
         frame.setVisible(true);
         return true;
     }
 }
 
-class RayTracerComponent extends Component {
+class RayTracerPanel extends JPanel {
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
     Image _image;
-    RayTracerComponent(int [] pixel, int width, int height) {
+
+    RayTracerPanel(int [] pixel, int width, int height) {
         _image = createImage(new MemoryImageSource(width, height, pixel, 0, width));
         setSize(width, height);
     }

@@ -77,6 +77,14 @@ public class Vector extends AbstractTriple {
     }
 
     /**
+     * Returns the square of the magnitude of this vector.
+     * @return
+     */
+    public double getSquareMagnitude() {
+        return dot(this);
+    }
+
+    /**
      * Define this Vector to be the difference of two Points (p2 - p1).
      *
      * @param p1 The first Point

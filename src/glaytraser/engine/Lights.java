@@ -12,8 +12,7 @@ public class Lights {
      * @return
      */
     public static int doLighting(Point p, Node root, Material m) {
-        // TODO:  Auto-generated method stub
-        return 255 << 16 | 255 << 8 | 255;
+        return 255 << 24 | 255 << 16 | 255 << 8;
         // TODO:  Loop through all the light sources, casting rays into the scene.
     }
 }

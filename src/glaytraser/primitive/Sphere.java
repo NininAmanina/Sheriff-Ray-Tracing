@@ -25,10 +25,10 @@ public class Sphere extends Node {
     public boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         // Simplify the math by dividing each of the arguments by 2.
         // This makes it slightly faster _and_ slightly more stable.
-        double a = ray.getVector().dot(ray.getVector());
+        double a = ray.getVector().getSquareMagnitude();
         Vector pc = new Vector(m_centre, ray.getPoint());
         double b = ray.getVector().dot(pc); // * 2;
-        double c = pc.dot(pc);
+        double c = pc.getSquareMagnitude();
 
         double discriminant = b * b - a * c;// * 4;
         if(discriminant < -Utils.EPSILON) {
@@ -43,8 +43,8 @@ public class Sphere extends Node {
             sqrtDisc = Math.sqrt(discriminant);
         }
         // TODO:  Make the math below a bit more numerically stable.
-        double t1 = (b - sqrtDisc) / a; // * 0.5;
-        double t2 = (b + sqrtDisc) / a; // * 0.5;
+        double t1 = (-b - sqrtDisc) / a; // * 0.5;
+        double t2 = (-b + sqrtDisc) / a; // * 0.5;
         double t = Math.min(Math.max(t1, 0), Math.max(t2, 0));
         if(t > Utils.EPSILON && t < result.getT()) {
             result.setT(t);
@@ -63,8 +63,8 @@ public class Sphere extends Node {
         return m_centre;
     }
 
-    public void setCenter(Point center) {
-        m_centre = center;
+    public void setCentre(Point centre) {
+        m_centre = centre;
     }
 
     public double getRadius() {
