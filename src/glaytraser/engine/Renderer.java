@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Renderer {
-    private static Node root = new Sphere(new Point(0, 0, 800), 400);
+    private static Node root = new Sphere(new Point(0, 0, 800), 200);
 
     // The view location
     private static Point camera = new Point(0, 0, -800);
@@ -70,21 +70,22 @@ public class Renderer {
         for(int r = 0; r < height; ++r) {
             scanlinePoint.set(scanlineStart);
             for(int c = 0; c < width; ++c) {
-//                // Initialise Ray and Result for each pixel
-//                result.init();
-//                ray.getVector().set(scanlinePoint, ray.getPoint()).normalize();
-//
-//                root.intersect(result, ray, true);
-//                if(result.getT() < Double.MAX_VALUE) {
-//                    // Lighting calculations
-//                    pixel[r * width + c] = Lights.doLighting(
-//                        (Point) scratchPoint.set(ray.getPoint())
-//                                            .add(scratchVector.set(ray.getVector())
-//                                                              .multiply(result.getT())),
-//                        root,
-//                        null); 
-//                }
-                pixel[r * width + c] = 255 << 24 | (r % 256) << 16 | (c % 256) << 8;
+                // Initialise Ray and Result for each pixel
+                result.init();
+                ray.getVector().set(scanlinePoint, ray.getPoint()).normalize();
+
+                root.intersect(result, ray, true);
+                if(result.getT() < Double.MAX_VALUE) {
+                    // Lighting calculations
+                    pixel[r * width + c] = Lights.doLighting(
+                        (Point) scratchPoint.set(ray.getPoint())
+                                            .add(scratchVector.set(ray.getVector())
+                                                              .multiply(result.getT())),
+                        root,
+                        null); 
+                } else {
+                    pixel[r * width + c] = 255 << 24 | (r % 256) << 16 | (c % 256) << 8;
+                }
                 scanlinePoint.add(horizontalVector);
             }
             scanlineStart.add(verticalVector);

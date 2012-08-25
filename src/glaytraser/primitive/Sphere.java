@@ -8,7 +8,7 @@ import glaytraser.math.Utils;
 import glaytraser.math.Vector;
 
 public class Sphere extends Node {
-    private double m_radius;
+    private double m_radiusSquared;
     private Point m_centre;
 
     private Point scratchPoint = new Point();
@@ -17,7 +17,7 @@ public class Sphere extends Node {
     public Sphere(Point p, double radius) {
         super(p);
         m_centre = p;
-        m_radius = radius;
+        m_radiusSquared = radius * radius;
     }
 
     // This must be overridden by primitives.
@@ -28,7 +28,7 @@ public class Sphere extends Node {
         double a = ray.getVector().getSquareMagnitude();
         Vector pc = new Vector(m_centre, ray.getPoint());
         double b = ray.getVector().dot(pc); // * 2;
-        double c = pc.getSquareMagnitude();
+        double c = pc.getSquareMagnitude() - m_radiusSquared;
 
         double discriminant = b * b - a * c;// * 4;
         if(discriminant < -Utils.EPSILON) {
@@ -65,13 +65,5 @@ public class Sphere extends Node {
 
     public void setCentre(Point centre) {
         m_centre = centre;
-    }
-
-    public double getRadius() {
-        return m_radius;
-    }
-
-    public void setRadius(double radius) {
-        m_radius = radius;
     }
 }
