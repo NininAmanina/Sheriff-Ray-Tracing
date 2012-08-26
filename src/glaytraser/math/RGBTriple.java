@@ -6,6 +6,12 @@ package glaytraser.math;
 public class RGBTriple extends AbstractTriple {
     /**
      * Constructor for RGBTriple
+     */
+    public RGBTriple() {
+    }
+
+    /**
+     * Constructor for RGBTriple
      * @param r is the red component
      * @param g is the green component
      * @param b is the blue component
@@ -55,6 +61,9 @@ public class RGBTriple extends AbstractTriple {
      * Returns the RGB color as an integer
      */
     public int getInt() {
+        for(int i = 0; i < 3; ++i) {
+            value[i] = Math.max(Math.min(1.0, value[i]), 0.0);
+        }
         return 255 << 24 | (int) (value[0] * 255) << 16 
                 | (int) (value[1] * 255) << 8 
                 | (int) (value[2] * 255);

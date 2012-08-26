@@ -1,6 +1,5 @@
 package glaytraser.engine;
 
-import glaytraser.engine.LightManager.PointLight;
 import glaytraser.math.Point;
 import glaytraser.math.RGBTriple;
 import glaytraser.math.Vector;
@@ -26,8 +25,6 @@ public class Renderer {
     private static int height = 768;
     private static double fov = 50.0;
 
-    private static LightManager m_lightManager = new LightManager();
-
     /**
      * @param args
      */
@@ -42,12 +39,10 @@ public class Renderer {
         RGBTriple specular = new RGBTriple(0.5, 0.7, 0.5);
 
         RGBTriple ptLightColour = new RGBTriple(0.7, 0.0, 0.7);
-        PointLight whiteLight = m_lightManager.new PointLight(new Point(-100, 150, 400), ptLightColour, ptLightColour);
+        // Define a single point light source
+        LightManager.addPointLightSource(new Point(-100, 150, 400), ptLightColour, ptLightColour);
 
         Material material = new Material(ambient, diffuse, specular);
-
-        // Define a single point light source
-        m_lightManager.addLightSource(whiteLight);
 
         // The main renderer logic
         Point scratchPoint = new Point();
