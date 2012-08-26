@@ -96,7 +96,7 @@ public class LightManager {
             // Do light calculations (Ref: CS488 course notes)
             // Calculate N = -L, where L is the vector from the intersection point
             // to the light source.
-            m_scratchVector.set(rayToLight.getVector());
+            m_scratchVector.set(rayToLight.getVector()).normalize();
             m_scratchVector.multiply(-1);
 
             double N_dot_L = result.getNormal().dot(m_scratchVector);
