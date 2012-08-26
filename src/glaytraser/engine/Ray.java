@@ -3,11 +3,12 @@ package glaytraser.engine;
 import glaytraser.math.*;
 
 public class Ray {
-    private Vector m_vector = new Vector(); // should be a unit vector when the ray is cast
+	// Should be a unit vector when the ray is cast
+    private Vector m_unitVector = new Vector(); 
     private Point m_point = new Point();
 
     public Vector getVector() {
-        return m_vector;
+        return m_unitVector;
     }
 
     public Point getPoint() {
@@ -16,11 +17,11 @@ public class Ray {
 
     public void init(Ray ray) {
         m_point.set(ray.getPoint());
-        m_vector.set(ray.getVector());
+        m_unitVector.set(ray.getVector());
     }
 
     public void transform(Matrix txMatrix) {
         m_point.multiply(txMatrix);
-        m_vector.multiply(txMatrix);
+        m_unitVector.multiply(txMatrix);
     }
 }

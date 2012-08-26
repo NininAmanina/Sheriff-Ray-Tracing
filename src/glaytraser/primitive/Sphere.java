@@ -48,8 +48,8 @@ public class Sphere extends Node {
         double t = Math.min(Math.max(t1, 0), Math.max(t2, 0));
         if(t > Utils.EPSILON && t < result.getT()) {
             result.setT(t);
-            // TODO:  Transform the normal into the world space.
-            // TODO:  Use generics to avoid the explicit cast below.
+            // TODO: Transform the normal into the world space.
+            // TODO: Use generics to avoid the explicit cast below.
             result.getNormal().set(m_centre,
                 (Point) scratchPoint.set(ray.getPoint()).add(
                     scratchVector.set(ray.getVector()).multiply(t)));
@@ -59,7 +59,7 @@ public class Sphere extends Node {
         return false;
     }
 
-    public Point getCenter() {
+    public Point getCentre() {
         return m_centre;
     }
 
