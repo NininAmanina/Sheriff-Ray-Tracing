@@ -1,12 +1,14 @@
 package glaytraser.engine;
 
+import java.util.ArrayList;
+
 import glaytraser.math.*;
 
 public class Node {
     Matrix m_txMatrix = new Matrix();
     Ray m_txRay = new Ray();
     Normal m_scratchNormal = new Normal();
-    Node [] m_child = new Node [0];
+    ArrayList<Node> m_child = new ArrayList<Node>();
     Material m_material;
 
     public Node() {
@@ -17,7 +19,7 @@ public class Node {
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
-    public boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+    public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         /*
         Each subclass of Node must have something like the following code within it --
         the t value, the material properties and the normal must be set at the same time.
@@ -31,7 +33,6 @@ public class Node {
             result.setMaterial(m_material);
         }
         */
-        return false;
     }
 
     /**
@@ -43,18 +44,29 @@ public class Node {
      *        then result is ignored (and may be null).
      * @return Whether this node or any of its children intersects with this Ray.
      */
-    public final boolean intersect(final Result result, final Ray ray, final boolean calcNormal) {
+    public final void intersect(final Result result, final Ray ray, final boolean calcNormal) {
         // Handle all of the children firstly
-        for(int i = 0, ii = m_child.length; i < ii; ++i) {
-            if(m_child[i].intersect(result, ray, calcNormal) && !calcNormal) {
-                return true;
-            }
+        for(Node child : m_child) {
+            child.intersect(result, ray, calcNormal);
         }
 
         // Now do our transformation
         m_txRay.init(ray);
         m_txRay.transform(m_txMatrix);
 
-        return rayIntersect(result, m_txRay, calcNormal);
+        rayIntersect(result, m_txRay, calcNormal);
+    }
+
+    public void addChild(Node node) {
+        m_child.add(node);
+    }
+
+    public Node setMaterial(Material material) {
+        m_material = material;
+        return this;
+    }
+
+    public Material getMaterial() {
+        return m_material;
     }
 }

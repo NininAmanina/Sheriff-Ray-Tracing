@@ -22,7 +22,7 @@ public class Sphere extends Node {
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
-    public boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+    public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         // Simplify the math by dividing each of the arguments by 2.
         // This makes it slightly faster _and_ slightly more stable.
         double a = ray.getVector().getSquareMagnitude();
@@ -32,7 +32,7 @@ public class Sphere extends Node {
 
         double discriminant = b * b - a * c;// * 4;
         if(discriminant < -Utils.EPSILON) {
-            return false;
+            return;
         }
         // If the discriminant's magnitude is less than EPSILON, then make it 0.
         // Otherwise, take its square root and cache the value.
@@ -48,15 +48,16 @@ public class Sphere extends Node {
         double t = Math.min(Math.max(t1, 0), Math.max(t2, 0));
         if(t > Utils.EPSILON && t < result.getT()) {
             result.setT(t);
-            // TODO: Transform the normal into the world space.
-            // TODO: Use generics to avoid the explicit cast below.
-            result.getNormal().set(m_centre,
-                (Point) scratchPoint.set(ray.getPoint()).add(
-                    scratchVector.set(ray.getVector()).multiply(t)));
-            // TODO:  Set the material property for the primitive
-            return true;
+            if(calcNormal) {
+                // TODO: Transform the normal into the world space.
+                // TODO: Use generics to avoid the explicit cast below.
+                result.getNormal().set(m_centre,
+                    (Point) scratchPoint.set(ray.getPoint()).add(
+                        scratchVector.set(ray.getVector()).multiply(t)));
+                // Set the material property for the primitive
+                result.setMaterial(getMaterial());
+            }
         }
-        return false;
     }
 
     public Point getCentre() {

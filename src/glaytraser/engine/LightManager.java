@@ -22,11 +22,7 @@ public class LightManager {
         Vector m_scratchVector = new Vector();
         RGBTriple m_scratchRGB = new RGBTriple();
 
-        private Light() {
-        }
-
-        abstract public void doLighting(Point intersectionPt, Result result, Node root, 
-                Material material, RGBTriple colour);
+        abstract public void doLighting(Point intersectionPt, Result result, Node root, RGBTriple colour);
 
         public Light(RGBTriple ambient, RGBTriple diffuse, RGBTriple specular) {
             m_ambient = ambient;
@@ -56,9 +52,8 @@ public class LightManager {
         }
 
         @Override
-        public void doLighting(Point intersectionPt, Result result, Node root,
-                Material material, RGBTriple colour) {
-            colour =  m_ambient.multiply(material.getAmbient());
+        public void doLighting(Point intersectionPt, Result result, Node root, RGBTriple colour) {
+            colour =  m_ambient.multiply(result.getMaterial().getAmbient());
         }
     }
 
@@ -68,6 +63,8 @@ public class LightManager {
     static class PointLight extends Light {
         // The position of the light source
         Point m_position;
+
+        Result m_scratchResult = new Result();
 
         private PointLight(Point p, RGBTriple diffuse, RGBTriple specular) {
             super(null, diffuse, specular);
@@ -80,25 +77,26 @@ public class LightManager {
         }
 
         @Override
-        public void doLighting(Point intersectionPt, Result result, Node root, 
-                Material material, RGBTriple colour) {
+        public void doLighting(Point intersectionPt, Result result, Node root, RGBTriple colour) {
             // A ray from the intersection point to the light source
             Ray rayToLight = new Ray();
-            rayToLight.getVector().set(intersectionPt, m_position);
+            final double distanceToLight = rayToLight.getVector().set(intersectionPt, m_position).normalize();
             rayToLight.getPoint().set(intersectionPt);
 
-            // If the object does not intersect with a light source, then no need to 
+            // If another object occludes this light source, then no need to 
             // do lighting calculations.
-            if(root.rayIntersect(null, rayToLight, false)) {
+            m_scratchResult.init();
+            root.rayIntersect(m_scratchResult, rayToLight, false);
+            if(m_scratchResult.getT() < distanceToLight) {
                 return;
             }
 
             // Do light calculations (Ref: CS488 course notes)
             // Calculate N = -L, where L is the vector from the intersection point
             // to the light source.
-            m_scratchVector.set(rayToLight.getVector()).normalize();
-            m_scratchVector.multiply(-1);
+            m_scratchVector.set(rayToLight.getVector());
 
+            final Material material = result.getMaterial();
             double N_dot_L = result.getNormal().dot(m_scratchVector);
             colour.add(((RGBTriple) m_scratchRGB.set(m_diffuse)).multiply(material.getDiffuse()).multiply(N_dot_L));
             // TODO: For specular colour, determine the Phong Factor and scale the specular colour with it.
@@ -115,12 +113,11 @@ public class LightManager {
      * @param m The Material
      * @return The colour of the pixel as an integer.
      */
-    public static int doLighting(Point intersectionPt, Result result, Node root, 
-            Material material) {
+    public static int doLighting(Point intersectionPt, Result result, Node root) {
         accumulatedColour.set(0, 0, 0);
         // Loop through all the light sources, casting rays into the scene.
         for(Light light : m_light) {
-            light.doLighting(intersectionPt, result, root, material, accumulatedColour);
+            light.doLighting(intersectionPt, result, root, accumulatedColour);
         }
 
         return accumulatedColour.getInt();

@@ -13,7 +13,15 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Renderer {
-    private static Node root = new Sphere(new Point(0, 0, -400), 50);
+    // Define some basic scene properties for a scene with a single sphere.
+    private static final RGBTriple ambient = new RGBTriple(0, 0, 0);
+    private static final RGBTriple diffuse = new RGBTriple(0.7, 1.0, 0.7);
+    private static final RGBTriple specular = new RGBTriple(0.5, 0.7, 0.5);
+
+    private static final RGBTriple ptLightColour = new RGBTriple(0.7, 0.0, 0.7);
+
+    private static final Material material = new Material(ambient, diffuse, specular);
+    private static Node root = new Node(new Point(0, 0, 0));
 
     // The view location
     private static Point camera = new Point(0, 0, -800);
@@ -23,7 +31,8 @@ public class Renderer {
     //    private static Matrix cameraGnomon = new Matrix();
     private static int width = 1024;
     private static int height = 768;
-    private static double fov = 50.0;
+    private static final double fovDegrees = 50.0;
+    private static double fov = Math.PI * (0.5 * fovDegrees / 180.0);
 
     /**
      * @param args
@@ -33,16 +42,12 @@ public class Renderer {
     }
 
     static boolean renderScene() {
-        // Define some basic scene properties for a scene with a single sphere.
-        RGBTriple ambient = new RGBTriple(0, 0, 0);
-        RGBTriple diffuse = new RGBTriple(0.7, 1.0, 0.7);
-        RGBTriple specular = new RGBTriple(0.5, 0.7, 0.5);
-
-        RGBTriple ptLightColour = new RGBTriple(0.7, 0.0, 0.7);
         // Define a single point light source
         LightManager.addPointLightSource(new Point(-100, 150, 400), ptLightColour, ptLightColour);
 
-        Material material = new Material(ambient, diffuse, specular);
+        root.addChild(new Sphere(new Point(0, 0, 400), 50).setMaterial(material));
+        root.addChild(new Sphere(new Point(10, -40, -100), 25).setMaterial(material));
+        root.addChild(new Sphere(new Point(-110, 160, 410), 10).setMaterial(material));
 
         // The main renderer logic
         Point scratchPoint = new Point();
@@ -52,9 +57,8 @@ public class Renderer {
         Ray ray = new Ray();
         ray.getPoint().set(camera);
         // Make these unit vectors
-        // TODO: Convert the unit vectors into the co-ordinate system of the camera.
         Vector verticalVector = new Vector(cameraUp).multiply(-1);
-        Vector horizontalVector = cameraDirection.crossProduct(cameraUp);
+        Vector horizontalVector = cameraUp.crossProduct(cameraDirection).multiply(-1.0);
 
         double halfWidth = (double) (width >> 1);
         double halfHeight = (double) (height >> 1);
@@ -66,9 +70,9 @@ public class Renderer {
         // and halfHeight = 0.5 pixels up from the centre of the pixel grid
         // TODO: Use generics to avoid the cast below
         Point scanlineStart = (Point) new Point(camera)
-        .add(temp)
-        .add(temp.set(horizontalVector).multiply(-(halfWidth - 0.5)))
-        .add(temp.set(cameraUp).multiply(halfHeight - 0.5));
+            .add(temp)
+            .add(temp.set(horizontalVector).multiply(-(halfWidth - 0.5)))
+            .add(temp.set(cameraUp).multiply(halfHeight - 0.5));
         Point scanlinePoint = new Point();
 
         int [] pixel = new int [width * height];
@@ -78,20 +82,18 @@ public class Renderer {
             for(int c = 0; c < width; ++c) {
                 // Initialise Ray and Result for each pixel
                 result.init();
-                ray.getVector().set(scanlinePoint, ray.getPoint()).normalize();
+                ray.getVector().set(ray.getPoint(), scanlinePoint).normalize();
 
                 root.intersect(result, ray, true);
                 if(result.getT() < Double.MAX_VALUE) {
                     result.getNormal().normalize();
                     // Lighting calculations
                     pixel[r * width + c] = LightManager.doLighting(
-                            (Point) scratchPoint.set(ray.getPoint())
-                            .add(scratchVector.set(ray.getVector())
-                                    .multiply(result.getT())),
-                                    result, 
-                                    root,
-                                    // For now, test using a hard-coded material.
-                                    material);
+                        (Point) scratchPoint.set(ray.getPoint())
+                                            .add(scratchVector.set(ray.getVector())
+                                                              .multiply(result.getT())),
+                        result,
+                        root);
                 } else {
                     pixel[r * width + c] = 255 << 24 | (r % 256) << 16 | (c % 256) << 8;
                 }
@@ -114,14 +116,14 @@ class RayTracerPanel extends JPanel {
      * 
      */
     private static final long serialVersionUID = 1L;
-    Image _image;
+    Image m_image;
 
     RayTracerPanel(int [] pixel, int width, int height) {
-        _image = createImage(new MemoryImageSource(width, height, pixel, 0, width));
+        m_image = createImage(new MemoryImageSource(width, height, pixel, 0, width));
         setSize(width, height);
     }
 
     public void paintComponent(Graphics g) {
-        g.drawImage(_image, 0, 0, null);
+        g.drawImage(m_image, 0, 0, null);
     }
 }
