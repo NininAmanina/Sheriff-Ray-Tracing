@@ -19,8 +19,9 @@ public class Renderer {
     private static final RGBTriple specular = new RGBTriple(0.5, 0.7, 0.5);
 
     private static final RGBTriple ptLightColour = new RGBTriple(0.7, 0.0, 0.7);
+    private static final RGBTriple amLightColour = new RGBTriple(0.4, 0.4, 0.4);
 
-    private static final Material material = new Material(ambient, diffuse, specular);
+    private static final Material material = new Material(diffuse, specular, 25);
     private static Node root = new Node(new Point(0, 0, 0));
 
     // The view location
@@ -43,7 +44,8 @@ public class Renderer {
 
     static boolean renderScene() {
         // Define a single point light source
-        LightManager.addPointLightSource(new Point(-100, 150, 400), ptLightColour, ptLightColour);
+        LightManager.addPointLightSource(new Point(-100, 150, 400), ptLightColour);
+        LightManager.addAmbientLightSource(amLightColour);
 
         root.addChild(new Sphere(new Point(0, 0, 400), 50).setMaterial(material));
         root.addChild(new Sphere(new Point(10, -40, -100), 25).setMaterial(material));

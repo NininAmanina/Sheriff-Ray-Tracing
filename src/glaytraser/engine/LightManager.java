@@ -16,30 +16,20 @@ public class LightManager {
      */
     static abstract class Light {
         // Properties of the light source
-        RGBTriple m_ambient;
-        RGBTriple m_diffuse;
-        RGBTriple m_specular;
+        RGBTriple m_colour;
+        
+        // Scratch colour for calculations
         Vector m_scratchVector = new Vector();
         RGBTriple m_scratchRGB = new RGBTriple();
 
         abstract public void doLighting(Point intersectionPt, Result result, Node root, RGBTriple colour);
 
-        public Light(RGBTriple ambient, RGBTriple diffuse, RGBTriple specular) {
-            m_ambient = ambient;
-            m_diffuse = diffuse;
-            m_specular = specular;
+        public Light(RGBTriple colour) {
+            m_colour = colour;
         }
 
-        public RGBTriple getAmbient() {
-            return m_ambient;
-        }
-
-        public RGBTriple getDiffuse() {
-            return m_diffuse;
-        }
-
-        public RGBTriple getSpecular() {
-            return m_specular;
+        public RGBTriple getColour() {
+            return m_colour;
         }
     }
 
@@ -47,13 +37,13 @@ public class LightManager {
      * This class represents an ambient light object and its properties.
      */
     static class AmbientLight extends Light {
-        private AmbientLight(RGBTriple ambient) {
-            super(ambient, null, null);
+        private AmbientLight(RGBTriple colour) {
+            super(colour);
         }
 
         @Override
         public void doLighting(Point intersectionPt, Result result, Node root, RGBTriple colour) {
-            colour =  m_ambient.multiply(result.getMaterial().getAmbient());
+            colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(result.getMaterial().getDiffuse()));
         }
     }
 
@@ -66,8 +56,8 @@ public class LightManager {
 
         Result m_scratchResult = new Result();
 
-        private PointLight(Point p, RGBTriple diffuse, RGBTriple specular) {
-            super(null, diffuse, specular);
+        private PointLight(Point p, RGBTriple colour) {
+            super(colour);
             m_position = p;
         }
 
@@ -98,10 +88,10 @@ public class LightManager {
 
             final Material material = result.getMaterial();
             double N_dot_L = result.getNormal().dot(m_scratchVector);
-            colour.add(((RGBTriple) m_scratchRGB.set(m_diffuse)).multiply(material.getDiffuse()).multiply(N_dot_L));
-            // TODO: For specular colour, determine the Phong Factor and scale the specular colour with it.
+            colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getDiffuse()).multiply(N_dot_L));
+            // TODO: For specular colour, incorporate Material.getPhong() and scale the specular colour with it.
             // For now, it is effectively set to 1.
-            colour.add(((RGBTriple) m_scratchRGB.set(m_specular)).multiply(material.getSpecular()));
+            colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getSpecular()));
         }
     }
 
@@ -123,7 +113,11 @@ public class LightManager {
         return accumulatedColour.getInt();
     }
 
-    public static void addPointLightSource(Point p, RGBTriple diffuse, RGBTriple specular) {
-        m_light.add(new PointLight(p, diffuse, specular));
+    public static void addPointLightSource(Point p, RGBTriple colour) {
+        m_light.add(new PointLight(p, colour));
+    }
+
+    public static void addAmbientLightSource(RGBTriple colour) {
+        m_light.add(new AmbientLight(colour));
     }
 }

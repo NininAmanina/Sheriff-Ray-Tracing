@@ -5,7 +5,7 @@ import glaytraser.math.*;
 public class Result {
     private Normal m_normal = new Normal();
     private double m_t;
-    private Material m_material = new Material();
+    private Material m_material;
 
     public Normal getNormal() {
         return m_normal;

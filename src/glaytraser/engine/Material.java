@@ -10,21 +10,18 @@ import glaytraser.math.RGBTriple;
  */
 public class Material {
     // Material properties
-    RGBTriple m_ambient;
-    RGBTriple m_diffuse;
-    RGBTriple m_specular;
+    private RGBTriple m_diffuse;
+    private RGBTriple m_specular;
+    private double m_phong;
 
-    public Material() {
-    }
-
-    public Material(RGBTriple ambient, RGBTriple diffuse, RGBTriple specular) {
-        m_ambient = ambient;
+    public Material(RGBTriple diffuse, RGBTriple specular, double phong) {
         m_diffuse = diffuse;
         m_specular = specular;
+        m_phong = phong;
     }
 
-    public RGBTriple getAmbient() {
-        return m_ambient;
+    public double getPhong() {
+        return m_phong;
     }
 
     public RGBTriple getDiffuse() {
