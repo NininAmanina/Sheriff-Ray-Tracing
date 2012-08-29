@@ -13,7 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Renderer {
-    // Define some basic scene properties for a scene with a single sphere.
+    // TODO:  Move these to a scene file once the parser is done
+    // Define some basic scene properties for a scene with a few spheres.
     private static final RGBTriple ambient = new RGBTriple(0, 0, 0);
     private static final RGBTriple diffuse = new RGBTriple(0.7, 1.0, 0.7);
     private static final RGBTriple specular = new RGBTriple(0.5, 0.7, 0.5);
@@ -21,8 +22,13 @@ public class Renderer {
     private static final RGBTriple ptLightColour = new RGBTriple(0.7, 0.0, 0.7);
     private static final RGBTriple amLightColour = new RGBTriple(0.4, 0.4, 0.4);
 
-    private static final Material material = new Material(diffuse, specular, 25);
-    private static Node root = new Node(new Point(0, 0, 0));
+    static {
+        // Define a single point light source
+        LightManager.addPointLightSource(new Point(-100, 150, 400), ptLightColour);
+        LightManager.addAmbientLightSource(amLightColour);
+    }
+
+    private static final Material material = Material.createMaterial("first", diffuse, specular, 25);
 
     // The view location
     private static Point camera = new Point(0, 0, -800);
@@ -39,22 +45,19 @@ public class Renderer {
      * @param args
      */
     public static void main(String[] args) {
-        Renderer.renderScene();
+//        Node root = Parser.parseScene(args[0]);
+        Node root = PrimitiveManager.createRoot();
+        PrimitiveManager.createSphere(":sphere1", new Point(0, 0, 400), 50).setMaterial(material);
+        PrimitiveManager.createSphere(":sphere2", new Point(10, -40, -100), 25).setMaterial(material);
+        PrimitiveManager.createSphere(":sphere3", new Point(-110, 160, 410), 10).setMaterial(material);
+
+        Renderer.renderScene(root);
     }
 
-    static boolean renderScene() {
-        // Define a single point light source
-        LightManager.addPointLightSource(new Point(-100, 150, 400), ptLightColour);
-        LightManager.addAmbientLightSource(amLightColour);
-
-        root.addChild(new Sphere(new Point(0, 0, 400), 50).setMaterial(material));
-        root.addChild(new Sphere(new Point(10, -40, -100), 25).setMaterial(material));
-        root.addChild(new Sphere(new Point(-110, 160, 410), 10).setMaterial(material));
-
+    static boolean renderScene(Node root) {
         // The main renderer logic
         Point scratchPoint = new Point();
         Vector scratchVector = new Vector();
-        // TODO: Move some of this into the scene definition file
         Result result = new Result();
         Ray ray = new Ray();
         ray.getPoint().set(camera);
@@ -104,7 +107,7 @@ public class Renderer {
             }
             scanlineStart.add(verticalVector);
         }
-        // TODO:  Push a modal dialog
+        // Push a screen with the rendered scene
         JFrame frame = new JFrame("GLaytraSer");
         frame.setSize(width, height);
         frame.add(new RayTracerPanel(pixel, width, height));
