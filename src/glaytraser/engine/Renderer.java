@@ -31,9 +31,10 @@ public class Renderer {
     private static final Material material = Material.createMaterial("first", diffuse, specular, 25);
 
     // The view location
-    private static Point camera = new Point(0, 0, -800);
+    private static Point cameraPoint = new Point(0, 0, -800);
     private static Vector cameraDirection = new Vector(0, 0, 1);
     private static Vector cameraUp = new Vector(0, 1, 0);
+    private static Camera camera = Camera.init(cameraPoint, cameraDirection, cameraUp);
 
     //    private static Matrix cameraGnomon = new Matrix();
     private static int width = 1024;
@@ -60,10 +61,12 @@ public class Renderer {
         Vector scratchVector = new Vector();
         Result result = new Result();
         Ray ray = new Ray();
-        ray.getPoint().set(camera);
+        final Point cameraPoint = camera.getPoint();
+        ray.getPoint().set(cameraPoint);
         // Make these unit vectors
+        final Vector cameraUp = camera.getUp();
         Vector verticalVector = new Vector(cameraUp).multiply(-1);
-        Vector horizontalVector = cameraUp.crossProduct(cameraDirection).multiply(-1.0);
+        Vector horizontalVector = cameraUp.crossProduct(camera.getDirection()).multiply(-1.0);
 
         double halfWidth = (double) (width >> 1);
         double halfHeight = (double) (height >> 1);
@@ -74,7 +77,7 @@ public class Renderer {
         // Find the top-left pixel's centre (move halfwidth - 0.5 pixels to the left,
         // and halfHeight = 0.5 pixels up from the centre of the pixel grid
         // TODO: Use generics to avoid the cast below
-        Point scanlineStart = (Point) new Point(camera)
+        Point scanlineStart = (Point) new Point(cameraPoint)
             .add(temp)
             .add(temp.set(horizontalVector).multiply(-(halfWidth - 0.5)))
             .add(temp.set(cameraUp).multiply(halfHeight - 0.5));

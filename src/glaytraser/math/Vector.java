@@ -136,6 +136,9 @@ public class Vector extends AbstractTriple {
         }
 
         double length = Math.sqrt(sum);
+        if(Math.abs(length) < Utils.EPSILON) {
+            throw new IllegalStateException("Cannot normalise a zero-length vector");
+        }
         if(length > 0) {
             for(int i = 0; i < 3; ++i) {
                 value[i] /= length;
