@@ -23,7 +23,7 @@ public class Renderer {
 
     static {
         // Define a single point light source
-        LightManager.addPointLightSource(new Point(-100, 150, 400), ptLightColour);
+        LightManager.addPointLightSource(new Point(-100, 150, 400), ptLightColour, 0);
         LightManager.addAmbientLightSource(amLightColour);
     }
 
@@ -35,7 +35,6 @@ public class Renderer {
     private static Vector cameraUp = new Vector(0, 1, 0);
     private static Camera camera = Camera.init(cameraPoint, cameraDirection, cameraUp);
 
-    //    private static Matrix cameraGnomon = new Matrix();
     private static int width = 1024;
     private static int height = 768;
     private static final double fovDegrees = 50.0;

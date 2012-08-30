@@ -103,7 +103,7 @@ public class Parser {
                         int index = getTriple(point, 1, result);
                         getTriple(light, index, result);
                         System.out.println("Adding point light " + light + " at " + point);
-                        LightManager.addPointLightSource(point, light);
+                        LightManager.addPointLightSource(point, light, 0);
                         continue;
                     } else if(line.startsWith(SURFACE_PROPERTY)) {
                         s.findInLine(SURFACE_PROPERTY + SPACE + NAME + SPACE + NAME);

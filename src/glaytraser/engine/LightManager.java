@@ -55,15 +55,30 @@ public class LightManager {
         Point m_position;
 
         Result m_scratchResult = new Result();
+        private int m_attenuation;
 
-        private PointLight(Point p, RGBTriple colour) {
+        /**
+         * Create a point light at a position with a certain colour and a given attenuation exponent.
+         * @param p The location of the point light.
+         * @param colour The colour of the light.
+         * @param attenuation The attenuation exponent.  It must be 0, 1, or 2.
+         */
+        private PointLight(Point p, RGBTriple colour, int attenuation) {
             super(colour);
             m_position = p;
+            if(attenuation < 0 || attenuation > 2) {
+                throw new IllegalArgumentException("Attenuation must be in [0..2], but requested: " + attenuation);
+            }
+            m_attenuation = attenuation;
         }
 
         // Returns the point position of the light source
         public Point getPosition() {
             return m_position;
+        }
+        
+        public int getAttenuation() {
+            return m_attenuation;
         }
 
         @Override
@@ -113,8 +128,8 @@ public class LightManager {
         return accumulatedColour.getInt();
     }
 
-    public static void addPointLightSource(Point p, RGBTriple colour) {
-        m_light.add(new PointLight(p, colour));
+    public static void addPointLightSource(Point p, RGBTriple colour, int attenuation) {
+        m_light.add(new PointLight(p, colour, attenuation));
     }
 
     public static void addAmbientLightSource(RGBTriple colour) {
