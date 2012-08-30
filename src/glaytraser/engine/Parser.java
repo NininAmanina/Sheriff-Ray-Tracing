@@ -32,8 +32,14 @@ public class Parser {
     private static final String SPACE = " +";
     private static final String STRING = "([\\w\\p{Punct}]+)";
     private static final String DOUBLE = "(\\-?\\d+(\\.\\d+)?)";
-//    private static final String DOUBLE = "(\\-?\\d+\\.?\\d+)";
     private static final String TRIPLE = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
+    private static final String REGEX_NODE = NODE + SPACE + STRING + SPACE + STRING;
+    private static final String REGEX_BOX = BOX + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE;
+    private static final String REGEX_SPHERE = SPHERE + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE;
+    private static final String REGEX_MATERIAL = MATERIAL + SPACE + STRING + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + DOUBLE;
+    private static final String REGEX_AMBIENT_LIGHT = AMBIENT_LIGHT + SPACE + TRIPLE;
+    private static final String REGEX_POINT_LIGHT = POINT_LIGHT + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + STRING;
+    private static final String REGEX_SURFACE_PROPERTY = SURFACE_PROPERTY + SPACE + STRING + SPACE + STRING;
 
     public static final Node parseScene(String fileName) {
         try {
@@ -51,87 +57,25 @@ public class Parser {
 
                     Scanner s = new Scanner(line);
                     if(line.startsWith(NODE)) {
-                        s.findInLine(NODE + SPACE + STRING + SPACE + STRING);
-                        MatchResult result = s.match();
-                        final String parent = result.group(1);
-                        final String STRING = result.group(2);
-                        System.out.println("Adding node " + STRING + " to " + parent);
-                        PrimitiveManager.addNode(parent, STRING);
+                        addNode(s);
                         continue;
                     } else if(line.startsWith(BOX)) {
-                        s.findInLine(BOX + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE);
-                        MatchResult result = s.match();
-                        final String parent = result.group(1);
-                        final String STRING = result.group(2);
-                        System.out.println("Unimplemented: Adding box " + STRING + " to " + parent);
-                        PrimitiveManager.addNode(parent, STRING);
+                        addBox(s);
                         continue;
                     } else if(line.startsWith(SPHERE)) {
-                        s.findInLine(SPHERE + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE);
-                        MatchResult result = s.match();
-                        final String parent = result.group(1);
-                        final String STRING = result.group(2);
-                        final Point point = new Point();
-                        int index = getTriple(point, 3, result);
-                        double radius = getDouble(index, result);
-                        System.out.println("Adding sphere " + STRING + " to " + parent + " of radius " + radius + " at " + point);
-                        PrimitiveManager.createSphere(parent, STRING, point, radius);
+                        addSphere(s);
                         continue;
                     } else if(line.startsWith(MATERIAL)) {
-                        s.findInLine(MATERIAL + SPACE + STRING + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + DOUBLE);
-                        MatchResult result = s.match();
-                        final String STRING = result.group(1);
-                        final RGBTriple diffuse = new RGBTriple();
-                        final RGBTriple specular = new RGBTriple();
-                        int index = getTriple(diffuse, 2, result);
-                        index = getTriple(specular, index, result);
-                        double phong = getDouble(index, result);
-                        System.out.println("Adding material " + STRING + ": diffuse=" + diffuse + "; specular=" + specular +
-                                           "; phong=" + phong);
-                        Material.addMaterial(STRING, diffuse, specular, phong);
+                        addMaterial(s);
                         continue;
                     } else if(line.startsWith(AMBIENT_LIGHT)) {
-                        s.findInLine(AMBIENT_LIGHT + SPACE + TRIPLE);
-                        MatchResult result = s.match();
-                        final RGBTriple light = new RGBTriple();
-                        getTriple(light, 1, result);
-                        System.out.println("Adding ambient " + light);
-                        LightManager.addAmbientLightSource(light);
+                        addAmbientLight(s);
                         continue;
                     } else if(line.startsWith(POINT_LIGHT)) {
-                        s.findInLine(POINT_LIGHT + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + STRING);
-                        MatchResult result = s.match();
-                        final Point point = new Point();
-                        final RGBTriple light = new RGBTriple();
-                        int index = getTriple(point, 1, result);
-                        index = getTriple(light, index, result);
-                        final String attenuation = result.group(index);
-                        int intAtten;
-                        if(NONE.equals(attenuation)) {
-                            intAtten = 0;
-                        } else if(LINEAR.equals(attenuation)) {
-                            intAtten = 1;
-                        } else if(QUADRATIC.equals(attenuation)) {
-                            intAtten = 2;
-                        } else {
-                            throw new IllegalArgumentException("Invalid attenuation: " + attenuation + " -- must be \"" + NONE +
-                                                               "\", \"" + LINEAR + "\", or \"" + QUADRATIC + "\"");
-                        }
-                        System.out.println("Adding point light " + light + " at " + point + " with attenuation " + intAtten);
-                        LightManager.addPointLightSource(point, light, intAtten);
+                        addPointLight(s);
                         continue;
                     } else if(line.startsWith(SURFACE_PROPERTY)) {
-                        s.findInLine(SURFACE_PROPERTY + SPACE + STRING + SPACE + STRING);
-                        MatchResult result = s.match();
-                        final String node = result.group(1);
-                        final String material = result.group(2);
-                        System.out.println("Adding material " + material + " to node " + node);
-                        try {
-                          PrimitiveManager.getNode(node).setMaterial(Material.getMaterial(material));
-                        } catch(RuntimeException e) {
-                            System.out.println("Error processing line:\n" + line);
-                            throw e;
-                        }
+                        addSurfaceProperty(line, s);
                         continue;
                     } else if(line.startsWith(TRANSLATE) || line.startsWith(ROTATE) || line.startsWith(SCALE)) {
                         System.out.println("Unimplemented command:\n" + line);
@@ -152,6 +96,96 @@ public class Parser {
         } catch(FileNotFoundException e) {
             throw new RuntimeException(e.getLocalizedMessage());
         }
+    }
+
+    private static void addSurfaceProperty(String line, Scanner s) {
+        s.findInLine(REGEX_SURFACE_PROPERTY);
+        MatchResult result = s.match();
+        final String node = result.group(1);
+        final String material = result.group(2);
+        System.out.println("Adding material " + material + " to node " + node);
+        try {
+          PrimitiveManager.getNode(node).setMaterial(Material.getMaterial(material));
+        } catch(RuntimeException e) {
+            System.out.println("Error processing line:\n" + line);
+            throw e;
+        }
+    }
+
+    private static void addPointLight(Scanner s) {
+        s.findInLine(REGEX_POINT_LIGHT);
+        MatchResult result = s.match();
+        final Point point = new Point();
+        final RGBTriple light = new RGBTriple();
+        int index = getTriple(point, 1, result);
+        index = getTriple(light, index, result);
+        final String attenuation = result.group(index);
+        int intAtten;
+        if(NONE.equals(attenuation)) {
+            intAtten = 0;
+        } else if(LINEAR.equals(attenuation)) {
+            intAtten = 1;
+        } else if(QUADRATIC.equals(attenuation)) {
+            intAtten = 2;
+        } else {
+            throw new IllegalArgumentException("Invalid attenuation: " + attenuation + " -- must be \"" + NONE +
+                                               "\", \"" + LINEAR + "\", or \"" + QUADRATIC + "\"");
+        }
+        System.out.println("Adding point light " + light + " at " + point + " with attenuation " + intAtten);
+        LightManager.addPointLightSource(point, light, intAtten);
+    }
+
+    private static void addAmbientLight(Scanner s) {
+        s.findInLine(REGEX_AMBIENT_LIGHT);
+        MatchResult result = s.match();
+        final RGBTriple light = new RGBTriple();
+        getTriple(light, 1, result);
+        System.out.println("Adding ambient " + light);
+        LightManager.addAmbientLightSource(light);
+    }
+
+    private static void addMaterial(Scanner s) {
+        s.findInLine(REGEX_MATERIAL);
+        MatchResult result = s.match();
+        final String STRING = result.group(1);
+        final RGBTriple diffuse = new RGBTriple();
+        final RGBTriple specular = new RGBTriple();
+        int index = getTriple(diffuse, 2, result);
+        index = getTriple(specular, index, result);
+        double phong = getDouble(index, result);
+        System.out.println("Adding material " + STRING + ": diffuse=" + diffuse + "; specular=" + specular +
+                           "; phong=" + phong);
+        Material.addMaterial(STRING, diffuse, specular, phong);
+    }
+
+    private static void addSphere(Scanner s) {
+        s.findInLine(REGEX_SPHERE);
+        MatchResult result = s.match();
+        final String parent = result.group(1);
+        final String STRING = result.group(2);
+        final Point point = new Point();
+        int index = getTriple(point, 3, result);
+        double radius = getDouble(index, result);
+        System.out.println("Adding sphere " + STRING + " to " + parent + " of radius " + radius + " at " + point);
+        PrimitiveManager.createSphere(parent, STRING, point, radius);
+    }
+
+    private static void addBox(Scanner s) {
+        s.findInLine(REGEX_BOX);
+        MatchResult result = s.match();
+        final String parent = result.group(1);
+        final String STRING = result.group(2);
+        System.out.println("Unimplemented: Adding box " + STRING + " to " + parent);
+        PrimitiveManager.addNode(parent, STRING);
+    }
+
+    private static void addNode(Scanner s) {
+        s.findInLine(REGEX_NODE);
+        MatchResult result = s.match();
+        final String parent = result.group(1);
+        final String STRING = result.group(2);
+        System.out.println("Adding node " + STRING + " to " + parent);
+        PrimitiveManager.addNode(parent, STRING);
     }
 
     private static int getTriple(final AbstractTriple t, final int startIndex, final MatchResult result) {
