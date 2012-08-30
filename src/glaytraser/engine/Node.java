@@ -14,9 +14,6 @@ public class Node {
     public Node() {
     }
 
-    public Node(Point p) {
-    }
-
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
     public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {

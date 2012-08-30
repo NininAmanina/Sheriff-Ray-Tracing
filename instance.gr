@@ -1,0 +1,80 @@
+# instance.gr
+# Thomas Pflaum 1996
+
+material stone { 0.8 0.7 0.7 } { 0.0 0.0 0.0 } 0 true
+material grass { 0.1 0.7 0.1 } { 0.0 0.0 0.0 } 0
+
+
+# ##############################################
+# the arc
+# ##############################################
+transform : inst
+
+transform :inst arc
+translate :inst:arc { 0 0 -10 }
+
+box :inst:arc p1 { 0 0 0 } 1
+surfaceproperty :inst:arc:p1 stone
+translate :inst:arc:p1 { -2.4 0 -0.4 }
+scale :inst:arc:p1 { 0 0 0 } { 0.8 4 0.8 }
+
+box :inst:arc p2 { 0 0 0 } 1
+surfaceproperty :inst:arc:p2 stone
+translate :inst:arc:p2 { 1.6 0 -0.4 }
+scale :inst:arc:p2 { 0 0 0 } { 0.8 4 0.8 }
+
+sphere :inst:arc s { 0 0 0 } 1
+surfaceproperty :inst:arc:s stone
+translate :inst:arc:s { 0 4 0 }
+scale    :inst:arc:s { 0 0 0 } { 4 0.6 0.6 }
+
+# ##############################################
+# the scene
+# ##############################################
+transform : scene
+rotate :scene x 23
+
+# the floor
+polyhedron :scene plane {
+	{  -1 0 -1  }
+	{   1 0 -1  }
+	{  1  0 1  }
+	{  -1 0 1  }
+} {
+        { 3 2 1 0 }
+}
+surfaceproperty :scene:plane grass
+scale    :scene:plane { 0 0 0 } { 30 30 30 }
+
+#sphere
+sphere :scene sphere { 0 0 0 } 2.5
+surfaceproperty :scene:sphere stone
+
+#instancing
+instance :scene arc1 :inst:arc
+rotate :scene:arc1 y 0
+
+instance :scene arc2 :inst:arc
+rotate :scene:arc2 y 60
+
+instance :scene arc3 :inst:arc
+rotate :scene:arc3 y 120
+
+instance :scene arc4 :inst:arc
+rotate :scene:arc4 y 180
+
+instance :scene arc5 :inst:arc
+rotate :scene:arc5 y 240
+
+instance :scene arc6 :inst:arc
+rotate :scene:arc6 y 300
+
+
+# light sources
+point_light { 200 202 430 } { 0.8 0.8 0.8 }  none
+ambient_light { 0.4 0.4 0.4 }
+
+# render it
+#render : size { 500 500 } eyepoint { 0 2 30 } viewdirection { 0 0 -1 } updirection { 0 1 0 } file instance.ppm fov 50
+render :scene size { 500 500 } eyepoint { 0 2 30 } viewdirection { 0 0 -1 } updirection { 0 1 0 } file instance.ppm fov 50
+exit

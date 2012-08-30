@@ -85,4 +85,17 @@ public abstract class AbstractTriple {
             value[i] = 0.0;
         }
     }
+
+    public String toString() {
+        return new StringBuilder(getClass().toString())
+                                .append(' ')
+                                .append('[')
+                                .append(value[0])
+                                .append(' ')
+                                .append(value[1])
+                                .append(' ')
+                                .append(value[2])
+                                .append(']')
+                                .toString();
+    }
 }

@@ -25,7 +25,7 @@ class Material {
         m_phong = phong;
     }
 
-    static final Material createMaterial(
+    static final Material addMaterial(
         final String name,
         final RGBTriple diffuse,
         final RGBTriple specular,

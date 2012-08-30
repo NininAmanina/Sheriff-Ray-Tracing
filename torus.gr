@@ -1,0 +1,25 @@
+# A simple scene with five spheres
+
+material mat1 { 0.7 1.0 0.7 } { 0.5 0.7 0.5 } 25
+material mat2 { 0.5 0.5 0.5 } { 0.5 0.7 0.5 } 25
+material mat3 { 1.0 0.6 0.1 } { 0.5 0.7 0.5 } 25
+
+torus : t1 { 0 0 0 } 20 8
+surfaceproperty :t1 mat1
+#sphere : s2 { 10 0 0 } 12
+#surfaceproperty :s2 mat3
+#sphere : s3 { -10 0 0 } 12
+#surfaceproperty :s3 mat1
+#sphere : s3 { 0 -120 -50 } 100
+#surfaceproperty :s3 mat2
+#sphere : s4 { -10 25 -30 } 5
+#surfaceproperty :s4 mat3
+#sphere : s5 { 0 10 -25 } 2.5
+#surfaceproperty :s5 mat1
+
+point_light { -10.0 15.0 40.0 } { 0.8 0.8 0.8 } none
+point_light { 40.0 10.0 15.0 } { 0.65 0.0 0.65 }  none
+ambient_light { 0.2 0.2 0.2 }
+
+render : size { 300 300 } eyepoint { 0 0 80 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 } file simple.bmp
+exit

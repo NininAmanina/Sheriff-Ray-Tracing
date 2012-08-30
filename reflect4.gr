@@ -1,0 +1,41 @@
+# A simple scene with five spheres
+#  This differs from nonhier.gr only in that a top level node is created
+
+material mat1 { 0.7 1.0 0.7 } { 0.5 0.7 0.5 } 25 true
+material mat2 { 0.5 0.5 0.5 } { 0.5 0.7 0.5 } 25 true
+material mat3 { 1.0 0.6 0.1 } { 0.5 0.7 0.5 } 25
+material mat4 { 0.7 0.6 1 } { 0.5 0.4 0.8 } 25 true
+material mat5 { 0.7 1.0 0.7 } { 0.5 0.7 0.5 } 25 true
+material mat6 { 1.0 0.6 0.1 } { 0.5 0.7 0.5 } 25 true
+
+sphere : s1 { 0 0 0 } 10
+surfaceproperty :s1 mat5
+
+polyhedron : plane1 {
+	{  -3 -1 -0.15  }
+	{   1 -2 -0.15  }
+	{  2  3 -0.15  }
+	{  -3 3 -0.15  }
+} {
+        { 3 2 1 0 }
+}
+#        { 0 1 2 3 }
+surfaceproperty :plane1 mat3
+
+#polyhedron : plane2 {
+	#{  -0.3 -0.3 0.15  }
+	#{   0.3 -0.3 0.15  }
+	#{  0.3  0.3 0.15  }
+	#{  -0.3 0.3 0.15  }
+#} {
+        #{ 3 2 1 0 }
+#}
+#surfaceproperty :plane2 mat4
+
+#point_light { -1.0 1.500 0.40 } { 0.9 0.9 0.9 }  none
+#point_light { 0.40 .010 0.15 } { 0.6 0.0 0.6 }  none
+point_light { 0.40 .010 0.15 } { 0.2 0.0 0.2 }  none
+ambient_light { 0.2 0.2 0.2 }
+
+render : size { 400 400 } eyepoint { 0 0 7.5 } viewdirection { 0 0 -1 } updirection { 0 1 0 } file nonhier.png
+exit

@@ -15,7 +15,6 @@ public class Sphere extends Node {
     private Vector scratchVector = new Vector();
 
     public Sphere(Point p, double radius) {
-        super(p);
         m_centre = p;
         m_radiusSquared = radius * radius;
     }

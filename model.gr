@@ -1,0 +1,140 @@
+# A simple scene with five spheres
+
+material red { 1.0 0.2 0.2 } { 0.5 0.7 0.5 } 25 
+material grey { 0.5 0.5 0.5 } { 0.5 0.7 0.5 }  25
+material orange { 1.0 0.6 0.1 } { 0.5 0.7 0.5 }  25 
+material purple { 0.7 0.6 1 } { 0.5 0.4 0.8 }  25 
+material pink { 1 0.6 1 } { 0.5 0.4 0.8 }  50
+material blue { 0.2 0.6 1 } { 0.5 0.4 0.8 }  5
+material yellow { 1 1 0.5 } { 0.5 0.4 0.8 }  10
+material green { 0.5 1 0.5 } { 0.5 0.4 0.8 }  25
+
+
+transform : scene
+
+transform :scene torso
+translate :scene:torso { 0 0 -200 }
+sphere :scene:torso s { 0 0 0 } 100
+scale :scene:torso:s { 0 0 0 } { 0.5 1.5 0.7 }
+surfaceproperty :scene:torso:s blue
+
+transform :scene:torso torso_shoulderj
+translate :scene:torso:torso_shoulderj { 0 140 0 }
+sphere :scene:torso:torso_shoulderj s { 0 0 0 } 50
+scale :scene:torso:torso_shoulderj:s { 0 0 0 } { 2 0.5 1.2 }
+surfaceproperty :scene:torso:torso_shoulderj:s pink
+
+transform :scene:torso:torso_shoulderj shoulder_neckj
+translate :scene:torso:torso_shoulderj:shoulder_neckj { 0 50 0 }
+sphere :scene:torso:torso_shoulderj:shoulder_neckj s { 0 0 0 } 25
+scale :scene:torso:torso_shoulderj:shoulder_neckj:s { 0 0 0 } { 1 2 1 }
+surfaceproperty :scene:torso:torso_shoulderj:shoulder_neckj:s pink
+
+transform :scene:torso:torso_shoulderj:shoulder_neckj neck_headj
+translate :scene:torso:torso_shoulderj:shoulder_neckj:neck_headj { 0 50 0 }
+sphere :scene:torso:torso_shoulderj:shoulder_neckj:neck_headj s { 0 0 0 } 50
+surfaceproperty :scene:torso:torso_shoulderj:shoulder_neckj:neck_headj:s pink
+
+transform :scene:torso:torso_shoulderj:shoulder_neckj:neck_headj neck_nosej
+translate :scene:torso:torso_shoulderj:shoulder_neckj:neck_headj:neck_nosej { 0 -20 60 }
+sphere :scene:torso:torso_shoulderj:shoulder_neckj:neck_headj:neck_nosej s { 0 0 0 } 10
+surfaceproperty :scene:torso:torso_shoulderj:shoulder_neckj:neck_headj:neck_nosej:s orange
+
+transform :scene:torso:torso_shoulderj shoulder_luarm
+translate :scene:torso:torso_shoulderj:shoulder_luarm { -90 0 0 }
+sphere :scene:torso:torso_shoulderj:shoulder_luarm s { 0 0 0 } 50
+translate :scene:torso:torso_shoulderj:shoulder_luarm:s { 0 -45 0 }
+scale :scene:torso:torso_shoulderj:shoulder_luarm:s { 0 0 0 } { 0.5 2 1.0 }
+surfaceproperty :scene:torso:torso_shoulderj:shoulder_luarm:s pink
+
+transform :scene:torso:torso_shoulderj:shoulder_luarm luarm_lforearm
+translate :scene:torso:torso_shoulderj:shoulder_luarm:luarm_lforearm { 0 -100 0 }
+sphere :scene:torso:torso_shoulderj:shoulder_luarm:luarm_lforearm s { 0 0 0 } 40
+translate :scene:torso:torso_shoulderj:shoulder_luarm:luarm_lforearm:s { 0 -70 0 }
+scale :scene:torso:torso_shoulderj:shoulder_luarm:luarm_lforearm:s { 0 0 0 } { 0.5 2 1.0 }
+surfaceproperty :scene:torso:torso_shoulderj:shoulder_luarm:luarm_lforearm:s pink
+
+transform :scene:torso:torso_shoulderj:shoulder_luarm:luarm_lforearm lhand
+translate :scene:torso:torso_shoulderj:shoulder_luarm:luarm_lforearm:lhand { 0 -100 0 }
+sphere :scene:torso:torso_shoulderj:shoulder_luarm:luarm_lforearm:lhand s { 0 0 0 } 10
+translate :scene:torso:torso_shoulderj:shoulder_luarm:luarm_lforearm:lhand:s { 0 -125 0 }
+surfaceproperty :scene:torso:torso_shoulderj:shoulder_luarm:luarm_lforearm:lhand:s orange
+
+transform :scene:torso:torso_shoulderj shoulder_ruarm
+translate :scene:torso:torso_shoulderj:shoulder_ruarm { 90 0 0 }
+sphere :scene:torso:torso_shoulderj:shoulder_ruarm s { 0 0 0 } 50
+translate :scene:torso:torso_shoulderj:shoulder_ruarm:s { 0 -45 0 }
+scale :scene:torso:torso_shoulderj:shoulder_ruarm:s { 0 0 0 } { 0.5 2 1.0 }
+surfaceproperty :scene:torso:torso_shoulderj:shoulder_ruarm:s pink
+
+transform :scene:torso:torso_shoulderj:shoulder_ruarm ruarm_rforearm
+translate :scene:torso:torso_shoulderj:shoulder_ruarm:ruarm_rforearm { 0 -100 0 }
+sphere :scene:torso:torso_shoulderj:shoulder_ruarm:ruarm_rforearm s { 0 0 0 } 40
+translate :scene:torso:torso_shoulderj:shoulder_ruarm:ruarm_rforearm:s { 0 -70 0 }
+scale :scene:torso:torso_shoulderj:shoulder_ruarm:ruarm_rforearm:s { 0 0 0 } { 0.5 2 1.0 }
+surfaceproperty :scene:torso:torso_shoulderj:shoulder_ruarm:ruarm_rforearm:s pink
+
+transform :scene:torso:torso_shoulderj:shoulder_ruarm:ruarm_rforearm rhand
+translate :scene:torso:torso_shoulderj:shoulder_ruarm:ruarm_rforearm:rhand { 0 -100 0 }
+sphere :scene:torso:torso_shoulderj:shoulder_ruarm:ruarm_rforearm:rhand s { 0 0 0 } 10
+translate :scene:torso:torso_shoulderj:shoulder_ruarm:ruarm_rforearm:rhand:s { 0 -125 0 }
+surfaceproperty :scene:torso:torso_shoulderj:shoulder_ruarm:ruarm_rforearm:rhand:s orange
+
+transform :scene:torso torso_hipj
+translate :scene:torso:torso_hipj { 0 -140 0 }
+sphere :scene:torso:torso_hipj s { 0 0 0 } 50
+scale :scene:torso:torso_hipj:s { 0 0 0 } { 1.2 0.5 1 }
+surfaceproperty :scene:torso:torso_hipj:s pink
+
+transform :scene:torso:torso_hipj hip_lthigh
+translate :scene:torso:torso_hipj:hip_lthigh { -50 0 0 }
+sphere :scene:torso:torso_hipj:hip_lthigh s { 0 0 0 } 50
+translate :scene:torso:torso_hipj:hip_lthigh:s { 0 -50 0 }
+scale :scene:torso:torso_hipj:hip_lthigh:s { 0 0 0 } { 0.5 2 0.5 }
+surfaceproperty :scene:torso:torso_hipj:hip_lthigh:s pink
+
+transform :scene:torso:torso_hipj:hip_lthigh lthigh_calf
+translate :scene:torso:torso_hipj:hip_lthigh:lthigh_calf { 0 -50 0 }
+sphere :scene:torso:torso_hipj:hip_lthigh:lthigh_calf s { 0 0 0 } 30
+translate :scene:torso:torso_hipj:hip_lthigh:lthigh_calf:s { 0 -100 0 }
+scale :scene:torso:torso_hipj:hip_lthigh:lthigh_calf:s { 0 0 0 } { 0.5 2 0.5 }
+surfaceproperty :scene:torso:torso_hipj:hip_lthigh:lthigh_calf:s pink
+
+transform :scene:torso:torso_hipj:hip_lthigh:lthigh_calf calf_lfoot
+translate :scene:torso:torso_hipj:hip_lthigh:lthigh_calf:calf_lfoot { 0 -150 0 }
+sphere :scene:torso:torso_hipj:hip_lthigh:lthigh_calf:calf_lfoot s { 0 0 0 } 10
+translate :scene:torso:torso_hipj:hip_lthigh:lthigh_calf:calf_lfoot:s { 0 -120 0 }
+surfaceproperty :scene:torso:torso_hipj:hip_lthigh:lthigh_calf:calf_lfoot:s green
+
+transform :scene:torso:torso_hipj hip_rthigh
+translate :scene:torso:torso_hipj:hip_rthigh { 50 0 0 }
+sphere :scene:torso:torso_hipj:hip_rthigh s { 0 0 0 } 50
+translate :scene:torso:torso_hipj:hip_rthigh:s { 0 -50 0 }
+scale :scene:torso:torso_hipj:hip_rthigh:s { 0 0 0 } { 0.5 2 0.5 }
+surfaceproperty :scene:torso:torso_hipj:hip_rthigh:s pink
+
+transform :scene:torso:torso_hipj:hip_rthigh rthigh_calf
+translate :scene:torso:torso_hipj:hip_rthigh:rthigh_calf { 0 -50 0 }
+sphere :scene:torso:torso_hipj:hip_rthigh:rthigh_calf s { 0 0 0 } 30
+translate :scene:torso:torso_hipj:hip_rthigh:rthigh_calf:s { 0 -100 0 }
+scale :scene:torso:torso_hipj:hip_rthigh:rthigh_calf:s { 0 0 0 } { 0.5 2 0.5 }
+surfaceproperty :scene:torso:torso_hipj:hip_rthigh:rthigh_calf:s pink
+
+transform :scene:torso:torso_hipj:hip_rthigh:rthigh_calf calf_rfoot
+translate :scene:torso:torso_hipj:hip_rthigh:rthigh_calf:calf_rfoot { 0 -150 0 }
+sphere :scene:torso:torso_hipj:hip_rthigh:rthigh_calf:calf_rfoot s { 0 0 0 } 10
+translate :scene:torso:torso_hipj:hip_rthigh:rthigh_calf:calf_rfoot:s { 0 -120 0 }
+surfaceproperty :scene:torso:torso_hipj:hip_rthigh:rthigh_calf:calf_rfoot:s green
+
+point_light { -100.0 150.0 400.0 } { 0.9 0.9 0.9 }  none
+point_light { 400.0 100.0 150.0 } { 0.6 0.0 0.6 }  none
+point_light { 100.0 -250.0 400.0 } { 0.9 0.9 0.9 }  none
+point_light { -400.0 -200.0 150.0 } { 0.6 0.0 0.6 }  none
+
+ambient_light { 0.2 0.2 0.2 }
+
+render : size { 500 500 } eyepoint { 0 -100 800 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 } file model.png
+exit
+
+
+

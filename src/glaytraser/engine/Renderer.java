@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 public class Renderer {
     // TODO:  Move these to a scene file once the parser is done
     // Define some basic scene properties for a scene with a few spheres.
-    private static final RGBTriple ambient = new RGBTriple(0, 0, 0);
     private static final RGBTriple diffuse = new RGBTriple(0.7, 1.0, 0.7);
     private static final RGBTriple specular = new RGBTriple(0.5, 0.7, 0.5);
 
@@ -28,7 +27,7 @@ public class Renderer {
         LightManager.addAmbientLightSource(amLightColour);
     }
 
-    private static final Material material = Material.createMaterial("first", diffuse, specular, 25);
+    private static final Material material = Material.addMaterial("first", diffuse, specular, 25);
 
     // The view location
     private static Point cameraPoint = new Point(0, 0, -800);
@@ -46,11 +45,11 @@ public class Renderer {
      * @param args
      */
     public static void main(String[] args) {
-//        Node root = Parser.parseScene(args[0]);
+//        Node root = Parser.parseScene("foo.gr");
         Node root = PrimitiveManager.createRoot();
-        PrimitiveManager.createSphere(":sphere1", new Point(0, 0, 400), 50).setMaterial(material);
-        PrimitiveManager.createSphere(":sphere2", new Point(10, -40, -100), 25).setMaterial(material);
-        PrimitiveManager.createSphere(":sphere3", new Point(-110, 160, 410), 10).setMaterial(material);
+        PrimitiveManager.createSphere(":", "sphere1", new Point(0, 0, 400), 50).setMaterial(material);
+        PrimitiveManager.createSphere(":", "sphere2", new Point(10, -40, -100), 25).setMaterial(material);
+        PrimitiveManager.createSphere(":", "sphere3", new Point(-110, 160, 410), 10).setMaterial(material);
 
         Renderer.renderScene(root);
     }

@@ -1,0 +1,37 @@
+# A simple scene with five spheres
+
+material mat1 { 0.7 1.0 0.7 } { 0.5 0.7 0.5 } 25
+material mat2 { 0.5 0.5 0.5 } { 0.5 0.7 0.5 } 25
+material mat3 { 1.0 0.6 0.1 } { 0.5 0.7 0.5 } 25
+material green { 0.0 1.0 0.0 } { 0.5 0.7 0.5 } 25
+material brown { 0.5 0.2 0.1 } { 0.5 0.7 0.5 } 25
+
+texture leather.png
+texture bubbles.png
+texture sand.png
+
+sphere : s1 { 0 -1200 -500 } 1000
+addTurbulence :s1
+surfaceproperty :s1 green
+scale :s1 { 0 0 0 } { 2 1 1 }
+
+sphere : s2 { -50 1500 -400 } 100
+scale :s2 { 0 0 0 } { 3 0.15 0.15 }
+surfaceproperty :s2 brown
+bump :s2
+addTurbulence :s2
+
+torus : t1 { 0 -20 -400 } 70 30
+AssocTexture :t1 leather.png
+
+sphere : t2 { 0 70 -400 } 50
+scale :t2 { 0 0 0 } { 0.15 2 0.15 }
+surfaceproperty :t2 mat3
+bump :t2
+addTurbulence :t2
+
+point_light { -100.0 150.0 400.0 } { 0.9 0.9 0.9 } none
+ambient_light { 0.3 0.3 0.3 }
+
+render : size { 500 500 } eyepoint { 0 0 800 } fov 50 viewdirection { 0 0 -800 } updirection { 0 1 0 } file scene.png
+exit
