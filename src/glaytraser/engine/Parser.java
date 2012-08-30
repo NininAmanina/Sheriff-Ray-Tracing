@@ -24,10 +24,13 @@ public class Parser {
     private static final String TRANSLATE = "translate";
     private static final String ROTATE = "rotate";
     private static final String SCALE = "scale";
+    private static final String NONE = "none";
+    private static final String LINEAR = "linear";
+    private static final String QUADRATIC = "quadratic";
 
     // Java Regexes
     private static final String SPACE = " +";
-    private static final String NAME = "([\\w\\p{Punct}]+)";
+    private static final String STRING = "([\\w\\p{Punct}]+)";
     private static final String DOUBLE = "(\\-?\\d+(\\.\\d+)?)";
 //    private static final String DOUBLE = "(\\-?\\d+\\.?\\d+)";
     private static final String TRIPLE = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
@@ -48,44 +51,44 @@ public class Parser {
 
                     Scanner s = new Scanner(line);
                     if(line.startsWith(NODE)) {
-                        s.findInLine(NODE + SPACE + NAME + SPACE + NAME);
+                        s.findInLine(NODE + SPACE + STRING + SPACE + STRING);
                         MatchResult result = s.match();
                         final String parent = result.group(1);
-                        final String name = result.group(2);
-                        System.out.println("Adding node " + name + " to " + parent);
-                        PrimitiveManager.addNode(parent, name);
+                        final String STRING = result.group(2);
+                        System.out.println("Adding node " + STRING + " to " + parent);
+                        PrimitiveManager.addNode(parent, STRING);
                         continue;
                     } else if(line.startsWith(BOX)) {
-                        s.findInLine(BOX + SPACE + NAME + SPACE + NAME + SPACE + TRIPLE + SPACE + DOUBLE);
+                        s.findInLine(BOX + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE);
                         MatchResult result = s.match();
                         final String parent = result.group(1);
-                        final String name = result.group(2);
-                        System.out.println("Unimplemented: Adding box " + name + " to " + parent);
-                        PrimitiveManager.addNode(parent, name);
+                        final String STRING = result.group(2);
+                        System.out.println("Unimplemented: Adding box " + STRING + " to " + parent);
+                        PrimitiveManager.addNode(parent, STRING);
                         continue;
                     } else if(line.startsWith(SPHERE)) {
-                        s.findInLine(SPHERE + SPACE + NAME + SPACE + NAME + SPACE + TRIPLE + SPACE + DOUBLE);
+                        s.findInLine(SPHERE + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE);
                         MatchResult result = s.match();
                         final String parent = result.group(1);
-                        final String name = result.group(2);
+                        final String STRING = result.group(2);
                         final Point point = new Point();
                         int index = getTriple(point, 3, result);
                         double radius = getDouble(index, result);
-                        System.out.println("Adding sphere " + name + " to " + parent + " of radius " + radius + " at " + point);
-                        PrimitiveManager.createSphere(parent, name, point, radius);
+                        System.out.println("Adding sphere " + STRING + " to " + parent + " of radius " + radius + " at " + point);
+                        PrimitiveManager.createSphere(parent, STRING, point, radius);
                         continue;
                     } else if(line.startsWith(MATERIAL)) {
-                        s.findInLine(MATERIAL + SPACE + NAME + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + DOUBLE);
+                        s.findInLine(MATERIAL + SPACE + STRING + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + DOUBLE);
                         MatchResult result = s.match();
-                        final String name = result.group(1);
+                        final String STRING = result.group(1);
                         final RGBTriple diffuse = new RGBTriple();
                         final RGBTriple specular = new RGBTriple();
                         int index = getTriple(diffuse, 2, result);
                         index = getTriple(specular, index, result);
                         double phong = getDouble(index, result);
-                        System.out.println("Adding material " + name + ": diffuse=" + diffuse + "; specular=" + specular +
+                        System.out.println("Adding material " + STRING + ": diffuse=" + diffuse + "; specular=" + specular +
                                            "; phong=" + phong);
-                        Material.addMaterial(name, diffuse, specular, phong);
+                        Material.addMaterial(STRING, diffuse, specular, phong);
                         continue;
                     } else if(line.startsWith(AMBIENT_LIGHT)) {
                         s.findInLine(AMBIENT_LIGHT + SPACE + TRIPLE);
@@ -96,17 +99,29 @@ public class Parser {
                         LightManager.addAmbientLightSource(light);
                         continue;
                     } else if(line.startsWith(POINT_LIGHT)) {
-                        s.findInLine(POINT_LIGHT + SPACE + TRIPLE + SPACE + TRIPLE);
+                        s.findInLine(POINT_LIGHT + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + STRING);
                         MatchResult result = s.match();
                         final Point point = new Point();
                         final RGBTriple light = new RGBTriple();
                         int index = getTriple(point, 1, result);
-                        getTriple(light, index, result);
-                        System.out.println("Adding point light " + light + " at " + point);
-                        LightManager.addPointLightSource(point, light, 0);
+                        index = getTriple(light, index, result);
+                        final String attenuation = result.group(index);
+                        int intAtten;
+                        if(NONE.equals(attenuation)) {
+                            intAtten = 0;
+                        } else if(LINEAR.equals(attenuation)) {
+                            intAtten = 1;
+                        } else if(QUADRATIC.equals(attenuation)) {
+                            intAtten = 2;
+                        } else {
+                            throw new IllegalArgumentException("Invalid attenuation: " + attenuation + " -- must be \"" + NONE +
+                                                               "\", \"" + LINEAR + "\", or \"" + QUADRATIC + "\"");
+                        }
+                        System.out.println("Adding point light " + light + " at " + point + " with attenuation " + intAtten);
+                        LightManager.addPointLightSource(point, light, intAtten);
                         continue;
                     } else if(line.startsWith(SURFACE_PROPERTY)) {
-                        s.findInLine(SURFACE_PROPERTY + SPACE + NAME + SPACE + NAME);
+                        s.findInLine(SURFACE_PROPERTY + SPACE + STRING + SPACE + STRING);
                         MatchResult result = s.match();
                         final String node = result.group(1);
                         final String material = result.group(2);
@@ -143,7 +158,7 @@ public class Parser {
         int index = startIndex;
         for(int i = 0; i < 3; ++i) {
             t.set(i, getDouble(index, result));
-            index += 2; // matching doubles witht he expression above requires skipping by 2
+            index += 2; // matching doubles with the expression above requires skipping by 2
         }
         return index;
     }
