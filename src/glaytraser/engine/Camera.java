@@ -12,6 +12,7 @@ public class Camera {
     private Vector m_cameraUp;
     private double m_fov;
     private String m_file;
+    private int [] m_pixel;
     private static final Camera m_camera = new Camera();
 
     /**
@@ -93,16 +94,16 @@ public class Camera {
         m_size = size;
     }
 
-    private void setPoint(final Point cameraPoint) {
-        m_cameraPoint = cameraPoint;
-    }
-
     public int getWidth() {
         return (int) m_size.get(0);
     }
 
     public int getHeight() {
         return (int) m_size.get(1);
+    }
+
+    private void setPoint(final Point cameraPoint) {
+        m_cameraPoint = cameraPoint;
     }
 
     public Point getPoint() {
@@ -123,6 +124,10 @@ public class Camera {
 
     public Vector getUp() {
         return m_cameraUp;
+    }
+
+    public void setPixel(int [] pixel) {
+        m_pixel = pixel;
     }
 
     public static Camera getCamera() {

@@ -127,7 +127,7 @@ public class Parser {
         final String file = result.group(index);
         double fov = getDouble(++index, result);
         Camera camera = Camera.init(size, cameraPoint, cameraDirection, cameraUp, file, fov);
-        int [] pixel = Renderer.renderScene(PrimitiveManager.getNode(node));
+        camera.setPixel(Renderer.renderScene(PrimitiveManager.getNode(node)));
     }
 
     private static void addSurfaceProperty(String line, Scanner s) {
