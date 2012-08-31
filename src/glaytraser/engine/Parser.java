@@ -1,8 +1,10 @@
 package glaytraser.engine;
 
 import glaytraser.math.AbstractTriple;
+import glaytraser.math.Pair;
 import glaytraser.math.Point;
 import glaytraser.math.RGBTriple;
+import glaytraser.math.Vector;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -27,11 +29,13 @@ public class Parser {
     private static final String NONE = "none";
     private static final String LINEAR = "linear";
     private static final String QUADRATIC = "quadratic";
+    private static final String RENDER = "render";
 
     // Java Regexes
     private static final String SPACE = " +";
     private static final String STRING = "([\\w\\p{Punct}]+)";
     private static final String DOUBLE = "(\\-?\\d+(\\.\\d+)?)";
+    private static final String PAIR = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
     private static final String TRIPLE = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
     private static final String REGEX_NODE = NODE + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_BOX = BOX + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE;
@@ -40,6 +44,13 @@ public class Parser {
     private static final String REGEX_AMBIENT_LIGHT = AMBIENT_LIGHT + SPACE + TRIPLE;
     private static final String REGEX_POINT_LIGHT = POINT_LIGHT + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + STRING;
     private static final String REGEX_SURFACE_PROPERTY = SURFACE_PROPERTY + SPACE + STRING + SPACE + STRING;
+    private static final String REGEX_RENDER = RENDER + SPACE + STRING + SPACE +
+                                               "size" + SPACE + PAIR + SPACE +
+                                               "eyepoint" + SPACE + TRIPLE + SPACE +
+                                               "viewdirection" + SPACE + TRIPLE + SPACE +
+                                               "updirection" + SPACE + TRIPLE + SPACE +
+                                               "file" + SPACE + STRING + SPACE +
+                                               "fov" + SPACE + DOUBLE;
 
     public static final Node parseScene(String fileName) {
         try {
@@ -79,6 +90,8 @@ public class Parser {
                         continue;
                     } else if(line.startsWith(TRANSLATE) || line.startsWith(ROTATE) || line.startsWith(SCALE)) {
                         System.out.println("Unimplemented command:\n" + line);
+                    } else if(line.startsWith(RENDER)) {
+                        render(s);
                     } else {
                         System.out.println("Unrecognised command:\n" + line);
                     }
@@ -96,6 +109,25 @@ public class Parser {
         } catch(FileNotFoundException e) {
             throw new RuntimeException(e.getLocalizedMessage());
         }
+    }
+
+    private static void render(Scanner s) {
+        s.findInLine(REGEX_RENDER);
+        MatchResult result = s.match();
+        int index = 1;
+        final String node = result.group(index);
+        Pair size = new Pair();
+        index = getPair(size, ++index, result);
+        Point cameraPoint = new Point();
+        index = getTriple(cameraPoint, index, result);
+        Vector cameraDirection = new Vector();
+        index = getTriple(cameraDirection, index, result);
+        Vector cameraUp = new Vector();
+        index = getTriple(cameraUp, index, result);
+        final String file = result.group(index);
+        double fov = getDouble(++index, result);
+        Camera camera = Camera.init(size, cameraPoint, cameraDirection, cameraUp, file, fov);
+        int [] pixel = Renderer.renderScene(PrimitiveManager.getNode(node));
     }
 
     private static void addSurfaceProperty(String line, Scanner s) {
@@ -192,6 +224,15 @@ public class Parser {
         int index = startIndex;
         for(int i = 0; i < 3; ++i) {
             t.set(i, getDouble(index, result));
+            index += 2; // matching doubles with the expression above requires skipping by 2
+        }
+        return index;
+    }
+
+    private static int getPair(final Pair p, final int startIndex, final MatchResult result) {
+        int index = startIndex;
+        for(int i = 0; i < 2; ++i) {
+            p.set(i, getDouble(index, result));
             index += 2; // matching doubles with the expression above requires skipping by 2
         }
         return index;

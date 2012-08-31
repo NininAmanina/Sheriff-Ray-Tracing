@@ -1,5 +1,6 @@
 package glaytraser.engine;
 
+import glaytraser.math.Pair;
 import glaytraser.math.Point;
 import glaytraser.math.RGBTriple;
 import glaytraser.math.Vector;
@@ -33,12 +34,12 @@ public class Renderer {
     private static Point cameraPoint = new Point(0, 0, -800);
     private static Vector cameraDirection = new Vector(0, 0, 1);
     private static Vector cameraUp = new Vector(0, 1, 0);
-    private static Camera camera = Camera.init(cameraPoint, cameraDirection, cameraUp);
-
     private static int width = 1024;
     private static int height = 768;
     private static final double fovDegrees = 50.0;
-    private static double fov = Math.PI * (0.5 * fovDegrees / 180.0);
+
+    private static Pair size = (Pair) new Pair().set(0, width).set(1, height);
+    private static Camera camera = Camera.init(size, cameraPoint, cameraDirection, cameraUp, "file.png", fovDegrees);
 
     /**
      * @param args
@@ -53,12 +54,13 @@ public class Renderer {
         Renderer.renderScene(root);
     }
 
-    static boolean renderScene(Node root) {
+    static int [] renderScene(Node root) {
         // The main renderer logic
         Point scratchPoint = new Point();
         Vector scratchVector = new Vector();
         Result result = new Result();
         Ray ray = new Ray();
+        Camera camera = Camera.getCamera();
         final Point cameraPoint = camera.getPoint();
         ray.getPoint().set(cameraPoint);
         // Make these unit vectors
@@ -66,11 +68,13 @@ public class Renderer {
         Vector verticalVector = new Vector(cameraUp).multiply(-1);
         Vector horizontalVector = cameraUp.crossProduct(camera.getDirection()).multiply(-1.0);
 
+        int width = camera.getWidth();
+        int height = camera.getHeight();
         double halfWidth = (double) (width >> 1);
         double halfHeight = (double) (height >> 1);
-        double distanceToPixelGrid = halfWidth / Math.tan(fov);
+        double distanceToPixelGrid = halfWidth / Math.tan(camera.getFov());
 
-        Vector temp = new Vector(cameraDirection).multiply(distanceToPixelGrid);
+        Vector temp = new Vector(camera.getDirection()).multiply(distanceToPixelGrid);
 
         // Find the top-left pixel's centre (move halfwidth - 0.5 pixels to the left,
         // and halfHeight = 0.5 pixels up from the centre of the pixel grid
@@ -113,7 +117,7 @@ public class Renderer {
         frame.setSize(width, height);
         frame.add(new RayTracerPanel(pixel, width, height));
         frame.setVisible(true);
-        return true;
+        return pixel;
     }
 }
 

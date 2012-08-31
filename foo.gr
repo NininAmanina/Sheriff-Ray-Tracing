@@ -87,5 +87,5 @@ point_light { 200 200 400 } { 0.8 0.8 0.8 }  none
 point_light { 0 5 -20 } { 0.4 0.4 0.8 }  none
 ambient_light { 0.4 0.4 0.4 }
 
-#render :scene size { 300 300 } eyepoint { 0 0 10 } viewdirection { 0 0 -1 } updirection { 0 1 0 }  file hier.ppm fov 50
-#exit
+render :scene size { 1024 768 } eyepoint { 0 0 10 } viewdirection { 0 0 -1 } updirection { 0 1 0 }  file hier.ppm fov 50
+exit
