@@ -73,6 +73,13 @@ public abstract class AbstractTriple {
         return this;
     }
 
+    public AbstractTriple subtract(Vector v) {
+        for(int i = 0; i < 3; ++i) {
+            value[i] -= v.value[i];
+        }
+        return this;
+    }
+    
     public AbstractTriple add(Vector v) {
         for(int i = 0; i < 3; ++i) {
             value[i] += v.value[i];

@@ -3,7 +3,6 @@ package glaytraser.engine;
 import glaytraser.math.Point;
 import glaytraser.math.RGBTriple;
 import glaytraser.math.Vector;
-import glaytraser.primitive.Sphere;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -27,7 +26,7 @@ public class Renderer {
         LightManager.addAmbientLightSource(amLightColour);
     }
 
-    private static final Material material = Material.addMaterial("first", diffuse, specular, 25);
+    private static final Material material = Material.addMaterial("first", diffuse, specular, 20);
 
     // The view location
     private static Point cameraPoint = new Point(0, 0, -800);
@@ -59,6 +58,7 @@ public class Renderer {
         Vector scratchVector = new Vector();
         Result result = new Result();
         Ray ray = new Ray();
+        Ray scratchRay = new Ray();
         final Point cameraPoint = camera.getPoint();
         ray.getPoint().set(cameraPoint);
         // Make these unit vectors
@@ -94,10 +94,16 @@ public class Renderer {
                 if(result.getT() < Double.MAX_VALUE) {
                     result.getNormal().normalize();
                     // Lighting calculations
+                    Point intersectionPt = (Point) scratchPoint.set(ray.getPoint())
+                    								.add(scratchVector.set(ray.getVector())
+                    							    .multiply(result.getT()));
+                    
+                    // Invert the ray to form the ray from intersection point to the eye
+                   	scratchRay.getPoint().set(intersectionPt);
+                    scratchRay.getVector().set(ray.getVector()).multiply(-1);
+                    
                     pixel[r * width + c] = LightManager.doLighting(
-                        (Point) scratchPoint.set(ray.getPoint())
-                                            .add(scratchVector.set(ray.getVector())
-                                                              .multiply(result.getT())),
+                    	scratchRay,
                         result,
                         root);
                 } else {

@@ -62,6 +62,7 @@ public class RGBTriple extends AbstractTriple {
      */
     public int getInt() {
         for(int i = 0; i < 3; ++i) {
+        	// Clamp the pixel colour to be in the range of [0, 1]
             value[i] = Math.max(Math.min(1.0, value[i]), 0.0);
         }
         return 255 << 24 | (int) (value[0] * 255) << 16 
