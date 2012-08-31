@@ -1,6 +1,7 @@
 package glaytraser.engine;
 
 import glaytraser.math.Point;
+import glaytraser.primitive.Box;
 import glaytraser.primitive.Sphere;
 
 import java.util.HashMap;
@@ -27,6 +28,10 @@ class PrimitiveManager {
 
     static final Sphere createSphere(final String parent, final String name, final Point point, final double radius) {
         return (Sphere) insertNode(parent, name, new Sphere(point, radius));
+    }
+
+    static Box addBox(String parent, String name, Point point, double length) {
+        return (Box) insertNode(parent, name, new Box(point, length));
     }
 
     /**

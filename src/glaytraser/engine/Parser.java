@@ -44,6 +44,9 @@ public class Parser {
     private static final String REGEX_AMBIENT_LIGHT = AMBIENT_LIGHT + SPACE + TRIPLE;
     private static final String REGEX_POINT_LIGHT = POINT_LIGHT + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + STRING;
     private static final String REGEX_SURFACE_PROPERTY = SURFACE_PROPERTY + SPACE + STRING + SPACE + STRING;
+    private static final String REGEX_TRANSLATE = TRANSLATE + SPACE + STRING + SPACE + TRIPLE;
+    private static final String REGEX_ROTATE = ROTATE + SPACE + STRING + SPACE + STRING + SPACE + DOUBLE;
+    private static final String REGEX_SCALE = SCALE + SPACE + STRING + SPACE + TRIPLE + SPACE + TRIPLE;
     private static final String REGEX_RENDER = RENDER + SPACE + STRING + SPACE +
                                                "size" + SPACE + PAIR + SPACE +
                                                "eyepoint" + SPACE + TRIPLE + SPACE +
@@ -59,10 +62,11 @@ public class Parser {
                 Node root = PrimitiveManager.createRoot();
                 String line;
                 while((line = buffer.readLine()) != null) {
-                    System.out.println(line);
                     if(line.length() == 0 || line.startsWith(COMMENT)) {
+                        System.out.println(line);
                         continue;
                     } else if(line.startsWith(EXIT)) {
+                        System.out.println(line);
                         break;
                     }
 
@@ -88,8 +92,15 @@ public class Parser {
                     } else if(line.startsWith(SURFACE_PROPERTY)) {
                         addSurfaceProperty(line, s);
                         continue;
-                    } else if(line.startsWith(TRANSLATE) || line.startsWith(ROTATE) || line.startsWith(SCALE)) {
-                        System.out.println("Unimplemented command:\n" + line);
+                    } else if(line.startsWith(TRANSLATE)) {
+                        translate(s);
+                        continue;
+                    } else if(line.startsWith(ROTATE)) {
+                        rotate(s);
+                        continue;
+                    } else if(line.startsWith(SCALE)) {
+                        scale(s);
+                        continue;
                     } else if(line.startsWith(RENDER)) {
                         render(s);
                     } else {
@@ -109,6 +120,45 @@ public class Parser {
         } catch(FileNotFoundException e) {
             throw new RuntimeException(e.getLocalizedMessage());
         }
+    }
+
+    private static void translate(final Scanner s) {
+        s.findInLine(REGEX_TRANSLATE);
+        final MatchResult result = s.match();
+        final String name = result.group(1);
+        final Vector vector = new Vector();
+        getTriple(vector, 2, result);
+        System.out.println("Translate " + name + " by "+ vector);
+        PrimitiveManager.getNode(name).translate(vector);
+    }
+
+    private static void rotate(Scanner s) {
+        s.findInLine(REGEX_ROTATE);
+        final MatchResult result = s.match();
+        final String name = result.group(1);
+        final String axis = result.group(2);
+        if(axis.length() != 1) {
+            throw new IllegalArgumentException("Invalid axis: " + axis);
+        }
+        int axisIndex = axis.charAt(0) - 'x';
+        if(axisIndex < 0 || axisIndex > 2) {
+            throw new IllegalArgumentException("Invalid axis: " + axis);
+        }
+        final double angle = Math.toRadians(getDouble(3, result));
+        System.out.println("Rotate " + name + " around axis " + axis + " by "+ angle);
+        PrimitiveManager.getNode(name).rotate(axisIndex, angle);
+    }
+
+    private static void scale(Scanner s) {
+        s.findInLine(REGEX_SCALE);
+        MatchResult result = s.match();
+        String name = result.group(1);
+        final Point point = new Point();
+        int index = getTriple(point, 2, result);
+        final Vector vector = new Vector();
+        getTriple(vector, index, result);
+        System.out.println("Scale " + name + " at point " + point + " by "+ vector);
+        PrimitiveManager.getNode(name).scale(point, vector);
     }
 
     private static void render(Scanner s) {
@@ -179,45 +229,48 @@ public class Parser {
     private static void addMaterial(Scanner s) {
         s.findInLine(REGEX_MATERIAL);
         MatchResult result = s.match();
-        final String STRING = result.group(1);
+        final String name = result.group(1);
         final RGBTriple diffuse = new RGBTriple();
         final RGBTriple specular = new RGBTriple();
         int index = getTriple(diffuse, 2, result);
         index = getTriple(specular, index, result);
         double phong = getDouble(index, result);
-        System.out.println("Adding material " + STRING + ": diffuse=" + diffuse + "; specular=" + specular +
+        System.out.println("Adding material " + name + ": diffuse=" + diffuse + "; specular=" + specular +
                            "; phong=" + phong);
-        Material.addMaterial(STRING, diffuse, specular, phong);
+        Material.addMaterial(name, diffuse, specular, phong);
     }
 
     private static void addSphere(Scanner s) {
         s.findInLine(REGEX_SPHERE);
         MatchResult result = s.match();
         final String parent = result.group(1);
-        final String STRING = result.group(2);
+        final String name = result.group(2);
         final Point point = new Point();
         int index = getTriple(point, 3, result);
         double radius = getDouble(index, result);
-        System.out.println("Adding sphere " + STRING + " to " + parent + " of radius " + radius + " at " + point);
-        PrimitiveManager.createSphere(parent, STRING, point, radius);
+        System.out.println("Adding sphere " + name + " to " + parent + " of radius " + radius + " at " + point);
+        PrimitiveManager.createSphere(parent, name, point, radius);
     }
 
     private static void addBox(Scanner s) {
         s.findInLine(REGEX_BOX);
         MatchResult result = s.match();
         final String parent = result.group(1);
-        final String STRING = result.group(2);
-        System.out.println("Unimplemented: Adding box " + STRING + " to " + parent);
-        PrimitiveManager.addNode(parent, STRING);
+        final String name = result.group(2);
+        Point point = new Point();
+        int index = getTriple(point, 3, result);
+        final double length = getDouble(index, result);
+        System.out.println("Adding box " + name + " of length " + length + " to " + parent + " at " + point);
+        PrimitiveManager.addBox(parent, name, point, length);
     }
 
     private static void addNode(Scanner s) {
         s.findInLine(REGEX_NODE);
         MatchResult result = s.match();
         final String parent = result.group(1);
-        final String STRING = result.group(2);
-        System.out.println("Adding node " + STRING + " to " + parent);
-        PrimitiveManager.addNode(parent, STRING);
+        final String name = result.group(2);
+        System.out.println("Adding node " + name + " to " + parent);
+        PrimitiveManager.addNode(parent, name);
     }
 
     private static int getTriple(final AbstractTriple t, final int startIndex, final MatchResult result) {

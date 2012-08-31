@@ -66,7 +66,7 @@ public class Camera {
             m_camera.setPoint(cameraPoint);
             m_camera.setDirection(cameraDirection);
             m_camera.setFile(file);
-            m_camera.setFov(Math.PI * (0.5 * fov / 180.0));
+            m_camera.setFov(Math.toRadians(0.5 * fov));
             m_initialised = true;
 
             return m_camera;
