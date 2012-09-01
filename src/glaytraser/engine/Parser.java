@@ -6,6 +6,7 @@ import glaytraser.math.Point;
 import glaytraser.math.RGBTriple;
 import glaytraser.math.Vector;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -177,7 +178,8 @@ public class Parser {
         final String file = result.group(index);
         double fov = getDouble(++index, result);
         Camera camera = Camera.init(size, cameraPoint, cameraDirection, cameraUp, file, fov);
-        camera.setPixel(Renderer.renderScene(PrimitiveManager.getNode(node)));
+        BufferedImage image = new BufferedImage(camera.getWidth(), camera.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        camera.setPixel(Renderer.renderScene(PrimitiveManager.getNode(node), image));
     }
 
     private static void addSurfaceProperty(String line, Scanner s) {

@@ -1,5 +1,11 @@
 package glaytraser.engine;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 import glaytraser.math.Pair;
 import glaytraser.math.Point;
 import glaytraser.math.Vector;
@@ -13,6 +19,7 @@ public class Camera {
     private double m_fov;
     private String m_file;
     private int [] m_pixel;
+    private BufferedImage m_image;
     private static final Camera m_camera = new Camera();
 
     /**
@@ -126,8 +133,31 @@ public class Camera {
         return m_cameraUp;
     }
 
+    public void setImage(BufferedImage image) {
+        m_image = image;
+    }
+
     public void setPixel(int [] pixel) {
         m_pixel = pixel;
+        writeImage();
+    }
+
+    private void writeImage() {
+        try {
+            // retrieve image
+            final int width = getWidth();
+            final int height = getHeight();
+            BufferedImage bi;
+            if(m_image != null) {
+                bi = m_image; 
+            } else {
+                bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                bi.setRGB(0, 0, width, height, m_pixel, 0, width);
+            }
+            File outputfile = new File(m_file);
+            ImageIO.write(bi, "png", outputfile);
+        } catch (IOException e) {
+        }
     }
 
     public static Camera getCamera() {

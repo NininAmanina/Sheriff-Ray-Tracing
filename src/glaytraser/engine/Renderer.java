@@ -8,6 +8,7 @@ import glaytraser.primitive.Sphere;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 
 import javax.swing.JFrame;
@@ -51,10 +52,11 @@ public class Renderer {
         PrimitiveManager.createSphere(":", "sphere2", new Point(10, -40, -100), 25).setMaterial(material);
         PrimitiveManager.createSphere(":", "sphere3", new Point(-110, 160, 410), 10).setMaterial(material);
 
-        Renderer.renderScene(root);
+        camera.setPixel(Renderer.renderScene(root, new BufferedImage(camera.getWidth(), camera.getHeight(),
+                                                                     BufferedImage.TYPE_INT_ARGB)));
     }
 
-    static int [] renderScene(Node root) {
+    static int [] renderScene(Node root, BufferedImage image) {
         // The main renderer logic
         Point scratchPoint = new Point();
         Vector scratchVector = new Vector();
@@ -107,6 +109,9 @@ public class Renderer {
                 } else {
                     pixel[r * width + c] = 255 << 24 | (r % 256) << 16 | (c % 256) << 8;
                 }
+                if(image != null) {
+                    image.setRGB(c, r, pixel[r * width + c]);
+                }
 
                 scanlinePoint.add(horizontalVector);
             }
@@ -115,7 +120,7 @@ public class Renderer {
         // Push a screen with the rendered scene
         JFrame frame = new JFrame("GLaytraSer");
         frame.setSize(width, height);
-        frame.add(new RayTracerPanel(pixel, width, height));
+        frame.add(new RayTracerPanel(image, width, height));
         frame.setVisible(true);
         return pixel;
     }
@@ -130,6 +135,11 @@ class RayTracerPanel extends JPanel {
 
     RayTracerPanel(int [] pixel, int width, int height) {
         m_image = createImage(new MemoryImageSource(width, height, pixel, 0, width));
+        setSize(width, height);
+    }
+
+    RayTracerPanel(Image image, int width, int height) {
+        m_image = image;
         setSize(width, height);
     }
 
