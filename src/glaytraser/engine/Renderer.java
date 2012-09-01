@@ -16,45 +16,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Renderer {
-    // TODO:  Move these to a scene file once the parser is done
-    // Define some basic scene properties for a scene with a few spheres.
-    private static final RGBTriple diffuse = new RGBTriple(0.7, 1.0, 0.7);
-    private static final RGBTriple specular = new RGBTriple(0.5, 0.7, 0.5);
-
-    private static final RGBTriple ptLightColour = new RGBTriple(0.7, 0.0, 0.7);
-    private static final RGBTriple amLightColour = new RGBTriple(0.4, 0.4, 0.4);
-
-    static {
-        // Define a single point light source
-        LightManager.addPointLightSource(new Point(-100, 150, 400), ptLightColour, 0);
-        LightManager.addAmbientLightSource(amLightColour);
-    }
-
-    private static final Material material = Material.addMaterial("first", diffuse, specular, 25);
-
-    // The view location
-    private static Point cameraPoint = new Point(0, 0, -800);
-    private static Vector cameraDirection = new Vector(0, 0, 1);
-    private static Vector cameraUp = new Vector(0, 1, 0);
-    private static int width = 1024;
-    private static int height = 768;
-    private static final double fovDegrees = 50.0;
-
-    private static Pair size = (Pair) new Pair().set(0, width).set(1, height);
-    private static Camera camera = Camera.init(size, cameraPoint, cameraDirection, cameraUp, "file.png", fovDegrees);
 
     /**
      * @param args
      */
     public static void main(String[] args) {
-//        Node root = Parser.parseScene("foo.gr");
-        Node root = PrimitiveManager.createRoot();
-        PrimitiveManager.createSphere(":", "sphere1", new Point(0, 0, 400), 50).setMaterial(material);
-        PrimitiveManager.createSphere(":", "sphere2", new Point(10, -40, -100), 25).setMaterial(material);
-        PrimitiveManager.createSphere(":", "sphere3", new Point(-110, 160, 410), 10).setMaterial(material);
-
-        camera.setPixel(Renderer.renderScene(root, new BufferedImage(camera.getWidth(), camera.getHeight(),
-                                                                     BufferedImage.TYPE_INT_ARGB)));
+        Node root = Parser.parseScene("simple.gr");
     }
 
     static int [] renderScene(Node root, BufferedImage image) {

@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.MatchResult;
 
@@ -19,6 +20,7 @@ public class Parser {
     private static final String COMMENT = "#";
     private static final String SPHERE = "sphere";
     private static final String BOX = "box";
+    private static final String POLYHEDRON = "polyhedron";
     private static final String NODE = "transform";
     private static final String MATERIAL = "material";
     private static final String POINT_LIGHT = "point_light";
@@ -40,6 +42,9 @@ public class Parser {
     private static final String TRIPLE = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
     private static final String REGEX_NODE = NODE + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_BOX = BOX + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE;
+    private static final String REGEX_POLYHEDRON1 = POLYHEDRON + SPACE + STRING + SPACE + STRING + SPACE + "\\{";
+    private static final String REGEX_POLYHEDRON2 = "} {";
+    private static final String REGEX_POLYHEDRON3 = "}";
     private static final String REGEX_SPHERE = SPHERE + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE;
     private static final String REGEX_MATERIAL = MATERIAL + SPACE + STRING + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + DOUBLE;
     private static final String REGEX_AMBIENT_LIGHT = AMBIENT_LIGHT + SPACE + TRIPLE;
@@ -51,10 +56,10 @@ public class Parser {
     private static final String REGEX_RENDER = RENDER + SPACE + STRING + SPACE +
                                                "size" + SPACE + PAIR + SPACE +
                                                "eyepoint" + SPACE + TRIPLE + SPACE +
+                                               "fov" + SPACE + DOUBLE + SPACE + 
                                                "viewdirection" + SPACE + TRIPLE + SPACE +
                                                "updirection" + SPACE + TRIPLE + SPACE +
-                                               "file" + SPACE + STRING + SPACE +
-                                               "fov" + SPACE + DOUBLE;
+                                               "file" + SPACE + STRING;
 
     public static final Node parseScene(String fileName) {
         try {
@@ -77,6 +82,9 @@ public class Parser {
                         continue;
                     } else if(line.startsWith(BOX)) {
                         addBox(s);
+                        continue;
+                    } else if(line.startsWith(POLYHEDRON)) {
+                        addPolyhedron(buffer, s);
                         continue;
                     } else if(line.startsWith(SPHERE)) {
                         addSphere(s);
@@ -171,12 +179,14 @@ public class Parser {
         index = getPair(size, ++index, result);
         Point cameraPoint = new Point();
         index = getTriple(cameraPoint, index, result);
+        double fov = getDouble(index, result);
+        ++index;
+        ++index;
         Vector cameraDirection = new Vector();
         index = getTriple(cameraDirection, index, result);
         Vector cameraUp = new Vector();
         index = getTriple(cameraUp, index, result);
         final String file = result.group(index);
-        double fov = getDouble(++index, result);
         Camera camera = Camera.init(size, cameraPoint, cameraDirection, cameraUp, file, fov);
         BufferedImage image = new BufferedImage(camera.getWidth(), camera.getHeight(), BufferedImage.TYPE_INT_ARGB);
         camera.setPixel(Renderer.renderScene(PrimitiveManager.getNode(node), image));
@@ -264,6 +274,45 @@ public class Parser {
         final double length = getDouble(index, result);
         System.out.println("Adding box " + name + " of length " + length + " to " + parent + " at " + point);
         PrimitiveManager.addBox(parent, name, point, length);
+    }
+
+    private static void addPolyhedron(final BufferedReader buffer, final Scanner s) {
+        s.findInLine(REGEX_POLYHEDRON1);
+        MatchResult result = s.match();
+        final String parent = result.group(1);
+        final String name = result.group(2);
+        ArrayList<Point> point = new ArrayList<Point>();
+        String line;
+        try {
+            // Extract the Points
+            while((line = buffer.readLine()) != null && !line.equals(REGEX_POLYHEDRON2)) {
+                final Scanner pointScanner = new Scanner(line);
+                pointScanner.findInLine(TRIPLE);
+                final MatchResult pointResult = pointScanner.match();
+                Point p = new Point();
+                getTriple(p, 1, pointResult);
+                point.add(p);
+            }
+            // Extract the polygons, as indices into the list of Point objects
+            ArrayList<Integer []> polygon = new ArrayList<Integer []>();
+            java.util.Vector<Integer> vertices = new java.util.Vector<Integer>();
+            while((line = buffer.readLine()) != null && !line.equals(REGEX_POLYHEDRON3)) {
+                vertices.clear();
+                final Scanner pointScanner = new Scanner(line);
+                while(pointScanner.hasNext()) {
+                    pointScanner.next();
+                    while(pointScanner.hasNextInt()) {
+                        vertices.add(pointScanner.nextInt());
+                    }
+                }
+                polygon.add((Integer []) vertices.toArray(new Integer[0]));
+            }
+            System.out.println("Adding polyhedron " + name + " with points " + point + " and polygons " + polygon + " to " +
+                               parent);
+            PrimitiveManager.addPolyhedron(parent, name, point, polygon);
+        } catch(IOException e) {
+            throw new RuntimeException("Error parsing polyhedron " + name);
+        }
     }
 
     private static void addNode(Scanner s) {

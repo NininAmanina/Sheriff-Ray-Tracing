@@ -2,8 +2,10 @@ package glaytraser.engine;
 
 import glaytraser.math.Point;
 import glaytraser.primitive.Box;
+import glaytraser.primitive.Polyhedron;
 import glaytraser.primitive.Sphere;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 class PrimitiveManager {
@@ -32,6 +34,10 @@ class PrimitiveManager {
 
     static Box addBox(String parent, String name, Point point, double length) {
         return (Box) insertNode(parent, name, new Box(point, length));
+    }
+
+    static Polyhedron addPolyhedron(String parent, String name, ArrayList <Point> point, ArrayList <Integer []> polygon) {
+        return (Polyhedron) insertNode(parent, name, new Polyhedron(point, polygon));
     }
 
     /**

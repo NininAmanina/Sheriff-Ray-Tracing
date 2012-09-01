@@ -2,9 +2,6 @@ package glaytraser.primitive;
 
 import java.util.ArrayList;
 
-import glaytraser.engine.Node;
-import glaytraser.engine.Ray;
-import glaytraser.engine.Result;
 import glaytraser.math.Point;
 import glaytraser.math.Vector;
 
@@ -30,13 +27,13 @@ public class Box extends Polyhedron {
         point.add((Point) new Point(p).add((Vector) scratchVector.set(length, length, length)));
 
         // Define the faces of the Box.
-        ArrayList<int []> polygon = new ArrayList<int []>();
-        polygon.add(new int [] { 0, 1, 3, 2 });
-        polygon.add(new int [] { 0, 4, 5, 1 });
-        polygon.add(new int [] { 0, 2, 6, 4 });
-        polygon.add(new int [] { 7, 3, 1, 5 });
-        polygon.add(new int [] { 7, 6, 2, 3 });
-        polygon.add(new int [] { 7, 5, 4, 6 });
+        ArrayList<Integer []> polygon = new ArrayList<Integer []>();
+        polygon.add(new Integer [] { 0, 1, 3, 2 });
+        polygon.add(new Integer [] { 0, 4, 5, 1 });
+        polygon.add(new Integer [] { 0, 2, 6, 4 });
+        polygon.add(new Integer [] { 7, 3, 1, 5 });
+        polygon.add(new Integer [] { 7, 6, 2, 3 });
+        polygon.add(new Integer [] { 7, 5, 4, 6 });
 
         // Store the Box as a Polyhedron
         init(point, polygon);

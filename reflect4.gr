@@ -37,5 +37,5 @@ surfaceproperty :plane1 mat3
 point_light { 0.40 .010 0.15 } { 0.2 0.0 0.2 }  none
 ambient_light { 0.2 0.2 0.2 }
 
-render : size { 400 400 } eyepoint { 0 0 7.5 } viewdirection { 0 0 -1 } updirection { 0 1 0 } file nonhier.png
+render : size { 400 400 } eyepoint { 0 0 7.5 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 } file nonhier.png
 exit

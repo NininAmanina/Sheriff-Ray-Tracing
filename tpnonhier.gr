@@ -102,5 +102,5 @@ point_light { -100.0 150.0 -400.0 } { 0.9 0.9 0.9 }  none
 point_light { 400.0 100.0 -650.0 } { 0.6 0.0 0.6 }  none
 ambient_light { 0.2 0.2 0.2 }
 
-render :scene size { 300 300 } eyepoint { 0 0 0 } viewdirection { 0 0 -1 } updirection { 0 1 0 } file nonhier.png
+render :scene size { 300 300 } eyepoint { 0 0 0 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 } file nonhier.png
 exit
