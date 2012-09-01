@@ -1,5 +1,6 @@
 package glaytraser.engine;
 
+import glaytraser.math.Normal;
 import glaytraser.math.Pair;
 import glaytraser.math.Point;
 import glaytraser.math.RGBTriple;
@@ -98,7 +99,15 @@ public class Renderer {
 
                 root.intersect(result, ray, true);
                 if(result.getT() < Double.MAX_VALUE) {
-                    result.getNormal().normalize();
+                    {
+                        final Normal normal = result.getNormal();
+                        normal.normalize();
+                        // In order to make both sides of a surface be shint, we need to ensure that the normal is in vaguely
+                        // opposite in direction form the light ray.
+                        if(normal.dot(ray.getVector()) > 0) {
+                            normal.multiply(-1);
+                        }
+                    }
                     // Lighting calculations
                     pixel[r * width + c] = LightManager.doLighting(
                         (Point) scratchPoint.set(ray.getPoint())
