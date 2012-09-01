@@ -1,25 +1,44 @@
 package glaytraser.primitive;
 
+import java.util.ArrayList;
+
 import glaytraser.engine.Node;
 import glaytraser.engine.Ray;
 import glaytraser.engine.Result;
 import glaytraser.math.Point;
 import glaytraser.math.Vector;
 
-public class Box extends Node {
-    private double m_length;
-    private Point m_centre;
-
-    private Point scratchPoint = new Point();
+public class Box extends Polyhedron {
     private Vector scratchVector = new Vector();
 
+    /**
+     * Create a cube.
+     * 
+     * @param p The point at which the box is anchored.
+     * @param length The length of each edge of the box.
+     */
     public Box(Point p, double length) {
-        m_centre = p;
-        m_length = length;
-    }
+        ArrayList<Point> point = new ArrayList<Point>();
+        // Define the vertices on the Box.
+        point.add((Point) new Point(p).add((Vector) scratchVector.set(     0,      0,      0)));
+        point.add((Point) new Point(p).add((Vector) scratchVector.set(length,      0,      0)));
+        point.add((Point) new Point(p).add((Vector) scratchVector.set(     0, length,      0)));
+        point.add((Point) new Point(p).add((Vector) scratchVector.set(length, length,      0)));
+        point.add((Point) new Point(p).add((Vector) scratchVector.set(     0,      0, length)));
+        point.add((Point) new Point(p).add((Vector) scratchVector.set(length,      0, length)));
+        point.add((Point) new Point(p).add((Vector) scratchVector.set(     0, length, length)));
+        point.add((Point) new Point(p).add((Vector) scratchVector.set(length, length, length)));
 
-    // This must be overridden by primitives.
-    // @result We expect null for the light-source intersection routine
-    public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+        // Define the faces of the Box.
+        ArrayList<int []> polygon = new ArrayList<int []>();
+        polygon.add(new int [] { 0, 1, 3, 2 });
+        polygon.add(new int [] { 0, 4, 5, 1 });
+        polygon.add(new int [] { 0, 2, 6, 4 });
+        polygon.add(new int [] { 7, 3, 1, 5 });
+        polygon.add(new int [] { 7, 6, 2, 3 });
+        polygon.add(new int [] { 7, 5, 4, 6 });
+
+        // Store the Box as a Polyhedron
+        init(point, polygon);
     }
 }
