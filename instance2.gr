@@ -75,6 +75,6 @@ point_light { 200 202 430 } { 0.8 0.8 0.8 }  none
 ambient_light { 0.4 0.4 0.4 }
 
 # render it
-#render : size { 500 500 } eyepoint { 0 2 30 } viewdirection { 0 0 -1 } updirection { 0 1 0 } file instance.ppm fov 50
-render :scene size { 200 200 } eyepoint { 0 2 30 } viewdirection { 0 0 -1 } updirection { 0 1 0 } file instance.ppm fov 50
+#render : size { 500 500 } eyepoint { 0 2 30 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 } file instance.png
+render :scene size { 200 200 } eyepoint { 0 2 30 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 } file instance.png
 exit

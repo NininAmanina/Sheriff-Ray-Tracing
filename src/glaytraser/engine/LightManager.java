@@ -106,7 +106,7 @@ public class LightManager {
             colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getDiffuse()).multiply(N_dot_L));
             // TODO: For specular colour, incorporate Material.getPhong() and scale the specular colour with it.
             // For now, it is effectively set to 1.
-            colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getSpecular()));
+//            colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getSpecular()));
         }
     }
 
