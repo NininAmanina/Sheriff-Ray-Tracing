@@ -1,5 +1,6 @@
 package glaytraser.engine;
 
+import glaytraser.math.Normal;
 import glaytraser.math.Pair;
 import glaytraser.math.Point;
 import glaytraser.math.RGBTriple;
@@ -7,6 +8,7 @@ import glaytraser.math.Vector;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 
 import javax.swing.JFrame;
@@ -44,16 +46,10 @@ public class Renderer {
      * @param args
      */
     public static void main(String[] args) {
-//        Node root = Parser.parseScene("foo.gr");
-        Node root = PrimitiveManager.createRoot();
-        PrimitiveManager.createSphere(":", "sphere1", new Point(0, 0, 400), 50).setMaterial(material);
-        PrimitiveManager.createSphere(":", "sphere2", new Point(10, -40, -100), 25).setMaterial(material);
-        PrimitiveManager.createSphere(":", "sphere3", new Point(-110, 160, 410), 10).setMaterial(material);
-
-        Renderer.renderScene(root);
+        Node root = Parser.parseScene("simple.gr");
     }
 
-    static int [] renderScene(Node root) {
+    static int [] renderScene(Node root, BufferedImage image) {
         // The main renderer logic
         Point scratchPoint = new Point();
         Vector scratchVector = new Vector();
@@ -96,7 +92,15 @@ public class Renderer {
 
                 root.intersect(result, ray, true);
                 if(result.getT() < Double.MAX_VALUE) {
-                    result.getNormal().normalize();
+                    {
+                        final Normal normal = result.getNormal();
+                        normal.normalize();
+                        // In order to make both sides of a surface be shint, we need to ensure that the normal is in vaguely
+                        // opposite in direction form the light ray.
+                        if(normal.dot(ray.getVector()) > 0) {
+                            normal.multiply(-1);
+                        }
+                    }
                     // Lighting calculations
                     Point intersectionPt = (Point) scratchPoint.set(ray.getPoint())
                     								.add(scratchVector.set(ray.getVector())
@@ -113,6 +117,9 @@ public class Renderer {
                 } else {
                     pixel[r * width + c] = 255 << 24 | (r % 256) << 16 | (c % 256) << 8;
                 }
+                if(image != null) {
+                    image.setRGB(c, r, pixel[r * width + c]);
+                }
 
                 scanlinePoint.add(horizontalVector);
             }
@@ -121,7 +128,7 @@ public class Renderer {
         // Push a screen with the rendered scene
         JFrame frame = new JFrame("GLaytraSer");
         frame.setSize(width, height);
-        frame.add(new RayTracerPanel(pixel, width, height));
+        frame.add(new RayTracerPanel(image, width, height));
         frame.setVisible(true);
         return pixel;
     }
@@ -136,6 +143,11 @@ class RayTracerPanel extends JPanel {
 
     RayTracerPanel(int [] pixel, int width, int height) {
         m_image = createImage(new MemoryImageSource(width, height, pixel, 0, width));
+        setSize(width, height);
+    }
+
+    RayTracerPanel(Image image, int width, int height) {
+        m_image = image;
         setSize(width, height);
     }
 

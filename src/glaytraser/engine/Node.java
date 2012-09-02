@@ -54,6 +54,35 @@ public class Node {
         rayIntersect(result, m_txRay, calcNormal);
     }
 
+    /**
+     * Translate this co-ordinate system by some Vector offset.
+     * 
+     * @param translate The Vector by which to translate this Node.
+     */
+    public final void translate(final Vector translate) {
+        // TODO:  Implement translate
+    }
+
+    /**
+     * Scaling in x, y, and z
+     * 
+     * @param scalePoint The point around which to scale in x, y, and z.
+     * @param scaleFactor The amount to scale in x, y, and z.
+     */
+    public final void scale(final Point scalePoint, final Vector scaleFactor) {
+        // TODO:  Implement scale
+    }
+
+    /**
+     * Rotate around an axis.
+     * 
+     * @param axis The axis around which to rotate (0 = x, 1 = y, 2 = z)
+     * @param angle The angle, in radians, which we need to rotate
+     */
+    public final void rotate(final int axis, final double angle) {
+        // TODO:  Implement scale
+    }
+
     public void addChild(Node node) {
         m_child.add(node);
     }

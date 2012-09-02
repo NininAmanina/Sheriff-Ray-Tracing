@@ -104,8 +104,8 @@ public class Vector extends AbstractTriple {
      * @param v1 The other vector
      * @return The cross product, as a vector
      */
-    public Vector crossProduct(Vector v1) {
-        return new Vector(value[1] * v1.value[2] - value[2] * v1.value[1], 
+    public Normal crossProduct(Vector v1) {
+        return new Normal(value[1] * v1.value[2] - value[2] * v1.value[1], 
                           value[2] * v1.value[0] - value[0] * v1.value[2],
                           value[0] * v1.value[1] - value[1] * v1.value[0]);
     }
