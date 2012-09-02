@@ -1,9 +1,7 @@
 package glaytraser.engine;
 
 import glaytraser.math.Normal;
-import glaytraser.math.Pair;
 import glaytraser.math.Point;
-import glaytraser.math.RGBTriple;
 import glaytraser.math.Vector;
 
 import java.awt.Graphics;
@@ -15,35 +13,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Renderer {
-    // TODO:  Move these to a scene file once the parser is done
-    // Define some basic scene properties for a scene with a few spheres.
-    private static final RGBTriple diffuse = new RGBTriple(0.7, 1.0, 0.7);
-    private static final RGBTriple specular = new RGBTriple(0.5, 0.7, 0.5);
-
-    private static final RGBTriple ptLightColour = new RGBTriple(0.7, 0.0, 0.7);
-    private static final RGBTriple amLightColour = new RGBTriple(0.4, 0.4, 0.4);
-
-    static {
-        // Define a single point light source
-        LightManager.addPointLightSource(new Point(-100, 150, 400), ptLightColour, 0);
-        LightManager.addAmbientLightSource(amLightColour);
-    }
-
-    private static final Material material = Material.addMaterial("first", diffuse, specular, 20);
-
-    // The view location
-    private static Point cameraPoint = new Point(0, 0, -800);
-    private static Vector cameraDirection = new Vector(0, 0, 1);
-    private static Vector cameraUp = new Vector(0, 1, 0);
-    private static int width = 1024;
-    private static int height = 768;
-    private static final double fovDegrees = 50.0;
-
-    private static Pair size = (Pair) new Pair().set(0, width).set(1, height);
-    
-//   For now, comment out this line because this causes the Camera to be initialized twice, which throws an exception.
-//    private static Camera camera = Camera.init(size, cameraPoint, cameraDirection, cameraUp, "file.png", fovDegrees);
-
     /**
      * @param args
      */
@@ -105,17 +74,14 @@ public class Renderer {
                     }
                     // Lighting calculations
                     Point intersectionPt = (Point) scratchPoint.set(ray.getPoint())
-                    								.add(scratchVector.set(ray.getVector())
-                    							    .multiply(result.getT()));
-                    
+                                                               .add(scratchVector.set(ray.getVector())
+                                                                       .multiply(result.getT()));
+
                     // Invert the ray to form the ray from intersection point to the eye
                    	scratchRay.getPoint().set(intersectionPt);
                     scratchRay.getVector().set(ray.getVector()).multiply(-1);
-                    
-                    pixel[r * width + c] = LightManager.doLighting(
-                    	scratchRay,
-                        result,
-                        root);
+
+                    pixel[r * width + c] = LightManager.doLighting(scratchRay, result, root);
                 } else {
                     pixel[r * width + c] = 255 << 24 | (r % 256) << 16 | (c % 256) << 8;
                 }
