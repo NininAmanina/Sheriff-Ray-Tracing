@@ -40,7 +40,9 @@ public class Renderer {
     private static final double fovDegrees = 50.0;
 
     private static Pair size = (Pair) new Pair().set(0, width).set(1, height);
-    private static Camera camera = Camera.init(size, cameraPoint, cameraDirection, cameraUp, "file.png", fovDegrees);
+    
+//   For now, comment out this line because this causes the Camera to be initialized twice, which throws an exception.
+//    private static Camera camera = Camera.init(size, cameraPoint, cameraDirection, cameraUp, "file.png", fovDegrees);
 
     /**
      * @param args
