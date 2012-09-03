@@ -5,7 +5,6 @@ import java.util.HashMap;
 import glaytraser.math.RGBTriple;
 
 /**
- * 
  * @author G & S
  *
  * This class contains the Material properties of a primitive.
@@ -18,23 +17,26 @@ class Material {
     private RGBTriple m_diffuse;
     private RGBTriple m_specular;
     private double m_phong;
+    private boolean m_isReflective;
 
-    private Material(final RGBTriple diffuse, final RGBTriple specular, final double phong) {
+    private Material(final RGBTriple diffuse, final RGBTriple specular, final double phong, final boolean isReflective) {
         m_diffuse = diffuse;
         m_specular = specular;
         m_phong = phong;
+        m_isReflective = isReflective;
     }
 
     static final Material addMaterial(
         final String name,
         final RGBTriple diffuse,
         final RGBTriple specular,
-        final double phong) {
+        final double phong,
+        final boolean isReflective) {
         synchronized(m_materialMap) {
             if(m_materialMap.containsKey(name)) {
                 throw new IllegalStateException("Already have material named \"" + name + "\"; please choose another name");
             }
-            Material m = new Material(diffuse, specular, phong);
+            Material m = new Material(diffuse, specular, phong, isReflective);
             m_materialMap.put(name,  m);
             return m;
         }
@@ -57,5 +59,9 @@ class Material {
 
     public RGBTriple getSpecular() {
         return m_specular;
+    }
+
+    public boolean isReflective() {
+        return m_isReflective;
     }
 }

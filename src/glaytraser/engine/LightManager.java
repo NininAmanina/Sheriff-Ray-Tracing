@@ -17,7 +17,7 @@ public class LightManager {
     static abstract class Light {
         // Properties of the light source
         RGBTriple m_colour;
-        
+
         // Scratch colour for calculations
         Vector m_scratchVector = new Vector();
         RGBTriple m_scratchRGB = new RGBTriple();

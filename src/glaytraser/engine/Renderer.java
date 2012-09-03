@@ -2,6 +2,7 @@ package glaytraser.engine;
 
 import glaytraser.math.Normal;
 import glaytraser.math.Point;
+import glaytraser.math.Utils;
 import glaytraser.math.Vector;
 
 import java.awt.Graphics;
@@ -17,7 +18,7 @@ public class Renderer {
      * @param args
      */
     public static void main(String[] args) {
-        Node root = Parser.parseScene("simple.gr");
+        Node root = Parser.parseScene("reflect.gr");
     }
 
     static int [] renderScene(Node root, BufferedImage image) {
@@ -66,7 +67,7 @@ public class Renderer {
                     {
                         final Normal normal = result.getNormal();
                         normal.normalize();
-                        // In order to make both sides of a surface be shint, we need to ensure that the normal is in vaguely
+                        // In order to make both sides of a surface be shiny, we need to ensure that the normal is in vaguely
                         // opposite in direction form the light ray.
                         if(normal.dot(ray.getVector()) > 0) {
                             normal.multiply(-1);
@@ -75,7 +76,7 @@ public class Renderer {
                     // Lighting calculations
                     Point intersectionPt = (Point) scratchPoint.set(ray.getPoint())
                                                                .add(scratchVector.set(ray.getVector())
-                                                                       .multiply(result.getT()));
+                                                                                 .multiply(result.getT()));
 
                     // Invert the ray to form the ray from intersection point to the eye
                    	scratchRay.getPoint().set(intersectionPt);
