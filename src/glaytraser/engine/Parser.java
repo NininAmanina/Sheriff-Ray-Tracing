@@ -25,6 +25,7 @@ public class Parser {
     private static final String NODE = "transform";
     private static final String MATERIAL = "material";
     private static final String POINT_LIGHT = "point_light";
+    private static final String DIRECTIONAL_LIGHT = "directional_light";
     private static final String AMBIENT_LIGHT = "ambient_light";
     private static final String SURFACE_PROPERTY = "surfaceproperty";
     private static final String TRANSLATE = "translate";
@@ -53,6 +54,7 @@ public class Parser {
     private static final String REGEX_MATERIAL = MATERIAL + SPACE + STRING + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + DOUBLE;
     private static final String REGEX_AMBIENT_LIGHT = AMBIENT_LIGHT + SPACE + TRIPLE;
     private static final String REGEX_POINT_LIGHT = POINT_LIGHT + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + STRING;
+    private static final String REGEX_DIRECTIONAL_LIGHT = DIRECTIONAL_LIGHT + SPACE + TRIPLE + SPACE + TRIPLE;
     private static final String REGEX_SURFACE_PROPERTY = SURFACE_PROPERTY + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_TRANSLATE = TRANSLATE + SPACE + STRING + SPACE + TRIPLE;
     private static final String REGEX_ROTATE = ROTATE + SPACE + STRING + SPACE + STRING + SPACE + DOUBLE;
@@ -104,6 +106,9 @@ public class Parser {
                         continue;
                     } else if(line.startsWith(POINT_LIGHT)) {
                         addPointLight(s);
+                        continue;
+                    } else if(line.startsWith(DIRECTIONAL_LIGHT)) {
+                        addDirectionalLight(s);
                         continue;
                     } else if(line.startsWith(SURFACE_PROPERTY)) {
                         addSurfaceProperty(line, s);
@@ -234,6 +239,17 @@ public class Parser {
         }
         System.out.println("Adding point light " + light + " at " + point + " with attenuation " + intAtten);
         LightManager.addPointLightSource(point, light, intAtten);
+    }
+
+    private static void addDirectionalLight(Scanner s) {
+        s.findInLine(REGEX_DIRECTIONAL_LIGHT);
+        MatchResult result = s.match();
+        final Vector direction = new Vector();
+        int index = getTriple(direction, 1, result);
+        final RGBTriple light = new RGBTriple();
+        index = getTriple(light, index, result);
+        System.out.println("Adding directional light " + light + " in direction " + direction);
+        LightManager.addDirectionalLightSource(direction, light);
     }
 
     private static void addAmbientLight(Scanner s) {

@@ -48,13 +48,65 @@ public class LightManager {
     }
 
     /**
+     * This class represents an ambient light object and its properties.
+     */
+    static class DirectionalLight extends Light {
+        private final Result m_scratchResult = new Result();
+        private final Ray m_scratchRay = new Ray();
+        private Vector m_direction;
+
+        /**
+         * Add a directional light source.
+         *
+         * @param colour The RGB values of the light
+         * @param direction The direction into which the light is travelling
+         */
+        private DirectionalLight(Vector direction, RGBTriple colour) {
+            super(colour);
+            m_direction = direction;
+        }
+
+        @Override
+        public void doLighting(Ray invertedRay, Result result, Node root, RGBTriple colour) {
+            // A ray from the intersection point to the light source
+            Ray rayToLight = m_scratchRay;
+            rayToLight.getVector().set(m_direction);
+            rayToLight.getPoint().set(invertedRay.getPoint());
+
+            // If another object occludes this light source, then no need to 
+            // do lighting calculations.
+            m_scratchResult.init();
+            root.rayIntersect(m_scratchResult, rayToLight, false);
+            if(m_scratchResult.getT() < Double.MAX_VALUE) {
+                return;
+            }
+
+            final Material material = result.getMaterial();
+            double N_dot_L = result.getNormal().dot(rayToLight.getVector());
+
+            // Reflected light vector due to a specular surface.
+            m_scratchVector.set(result.getNormal()).multiply(N_dot_L).multiply(2);
+            m_scratchVector.subtract(rayToLight.getVector());
+
+            // Vector from the intersection point to the eye (camera) position.
+            double R_dot_V = m_scratchVector.dot(invertedRay.getVector());
+
+            double phongSpecularTerm = Math.pow(R_dot_V, material.getPhong());
+
+            // Uses Phong shading for materials with a specular property.
+            colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getSpecular()).multiply(phongSpecularTerm));
+            colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getDiffuse()).multiply(N_dot_L));
+        }
+    }
+
+    /**
      * This class represents a light source with a position and its properties.
      */
     static class PointLight extends Light {
         // The position of the light source
-        Point m_position;
-
-        Result m_scratchResult = new Result();
+        private Point m_position;
+        private final Ray m_scratchRay = new Ray();
+        private final Result m_scratchResult = new Result();
         private int m_attenuation;
 
         /**
@@ -84,7 +136,7 @@ public class LightManager {
         @Override
         public void doLighting(Ray invertedRay, Result result, Node root, RGBTriple colour) {
             // A ray from the intersection point to the light source
-            Ray rayToLight = new Ray();
+            Ray rayToLight = m_scratchRay;
             final double distanceToLight = rayToLight.getVector().set(invertedRay.getPoint(), m_position).normalize();
             rayToLight.getPoint().set(invertedRay.getPoint());
 
@@ -98,19 +150,17 @@ public class LightManager {
 
             final Material material = result.getMaterial();
             double N_dot_L = result.getNormal().dot(rayToLight.getVector());
-            
+
             // Reflected light vector due to a specular surface.
             m_scratchVector.set(result.getNormal()).multiply(N_dot_L).multiply(2);
             m_scratchVector.subtract(rayToLight.getVector());
-            
+
             // Vector from the intersection point to the eye (camera) position.
             double R_dot_V = m_scratchVector.dot(invertedRay.getVector());
-            
             double phongSpecularTerm = Math.pow(R_dot_V, material.getPhong());
-            
+
             // Uses Phong shading for materials with a specular property.
             colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getSpecular()).multiply(phongSpecularTerm));
-            
             colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getDiffuse()).multiply(N_dot_L));
         }
     }
@@ -133,11 +183,15 @@ public class LightManager {
         return accumulatedColour.getInt();
     }
 
-    public static void addPointLightSource(Point p, RGBTriple colour, int attenuation) {
+    public static void addPointLightSource(final Point p, final RGBTriple colour, final int attenuation) {
         m_light.add(new PointLight(p, colour, attenuation));
     }
 
-    public static void addAmbientLightSource(RGBTriple colour) {
+    public static void addDirectionalLightSource(final Vector direction, final RGBTriple colour) {
+        m_light.add(new DirectionalLight(direction, colour));
+    }
+
+    public static void addAmbientLightSource(final RGBTriple colour) {
         m_light.add(new AmbientLight(colour));
     }
 }
