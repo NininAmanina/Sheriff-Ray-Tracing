@@ -38,7 +38,7 @@ public class RGBTriple extends AbstractTriple {
      * @return The colour resulting from the multiplication.
      */
     public RGBTriple multiply(RGBTriple rgb){
-        for(int i=0; i<3; i++) {
+        for(int i = 0; i < 3; ++i) {
             value[i] *= rgb.value[i];
         }
         return this;
@@ -65,7 +65,8 @@ public class RGBTriple extends AbstractTriple {
         	// Clamp the pixel colour to be in the range of [0, 1]
             value[i] = Math.max(Math.min(1.0, value[i]), 0.0);
         }
-        return 255 << 24 | (int) (value[0] * 255) << 16 
+        return 255 << 24
+                | (int) (value[0] * 255) << 16 
                 | (int) (value[1] * 255) << 8 
                 | (int) (value[2] * 255);
     }

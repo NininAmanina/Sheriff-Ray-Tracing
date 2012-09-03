@@ -19,6 +19,7 @@ public class Parser {
     private static final String EXIT = "exit";
     private static final String COMMENT = "#";
     private static final String SPHERE = "sphere";
+    private static final String TORUS = "torus";
     private static final String BOX = "box";
     private static final String POLYHEDRON = "polyhedron";
     private static final String NODE = "transform";
@@ -33,6 +34,7 @@ public class Parser {
     private static final String LINEAR = "linear";
     private static final String QUADRATIC = "quadratic";
     private static final String RENDER = "render";
+    private static final String TRUE = "true";
 
     // Java Regexes
     private static final String SPACE = " +";
@@ -46,6 +48,8 @@ public class Parser {
     private static final String REGEX_POLYHEDRON2 = "} {";
     private static final String REGEX_POLYHEDRON3 = "}";
     private static final String REGEX_SPHERE = SPHERE + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE;
+    private static final String REGEX_TORUS = TORUS + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE + SPACE +
+                                              DOUBLE;
     private static final String REGEX_MATERIAL = MATERIAL + SPACE + STRING + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + DOUBLE;
     private static final String REGEX_AMBIENT_LIGHT = AMBIENT_LIGHT + SPACE + TRIPLE;
     private static final String REGEX_POINT_LIGHT = POINT_LIGHT + SPACE + TRIPLE + SPACE + TRIPLE + SPACE + STRING;
@@ -89,8 +93,11 @@ public class Parser {
                     } else if(line.startsWith(SPHERE)) {
                         addSphere(s);
                         continue;
+                    } else if(line.startsWith(TORUS)) {
+                        addTorus(s);
+                        continue;
                     } else if(line.startsWith(MATERIAL)) {
-                        addMaterial(s);
+                        addMaterial(line, s);
                         continue;
                     } else if(line.startsWith(AMBIENT_LIGHT)) {
                         addAmbientLight(s);
@@ -238,7 +245,8 @@ public class Parser {
         LightManager.addAmbientLightSource(light);
     }
 
-    private static void addMaterial(Scanner s) {
+    private static void addMaterial(String line, Scanner s) {
+        boolean isReflective = line.endsWith(TRUE);
         s.findInLine(REGEX_MATERIAL);
         MatchResult result = s.match();
         final String name = result.group(1);
@@ -248,8 +256,8 @@ public class Parser {
         index = getTriple(specular, index, result);
         double phong = getDouble(index, result);
         System.out.println("Adding material " + name + ": diffuse=" + diffuse + "; specular=" + specular +
-                           "; phong=" + phong);
-        Material.addMaterial(name, diffuse, specular, phong);
+                           "; phong=" + phong + "; isReflective=" + isReflective);
+        Material.addMaterial(name, diffuse, specular, phong, isReflective);
     }
 
     private static void addSphere(Scanner s) {
@@ -261,7 +269,23 @@ public class Parser {
         int index = getTriple(point, 3, result);
         double radius = getDouble(index, result);
         System.out.println("Adding sphere " + name + " to " + parent + " of radius " + radius + " at " + point);
-        PrimitiveManager.createSphere(parent, name, point, radius);
+        PrimitiveManager.addSphere(parent, name, point, radius);
+    }
+
+    private static void addTorus(Scanner s) {
+        s.findInLine(REGEX_TORUS);
+        MatchResult result = s.match();
+        final String parent = result.group(1);
+        final String name = result.group(2);
+        final Point point = new Point();
+        int index = getTriple(point, 3, result);
+        final double toroidal = getDouble(index, result);
+        ++index;
+        ++index;
+        final double polaroidal = getDouble(index, result);
+        System.out.println("Adding torus " + name + " to " + parent + " of radii (" + toroidal + ", " + polaroidal + ") at "
+                           + point);
+        PrimitiveManager.createTorus(parent, name, point, toroidal, polaroidal);
     }
 
     private static void addBox(Scanner s) {

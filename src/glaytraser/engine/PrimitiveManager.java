@@ -4,6 +4,7 @@ import glaytraser.math.Point;
 import glaytraser.primitive.Box;
 import glaytraser.primitive.Polyhedron;
 import glaytraser.primitive.Sphere;
+import glaytraser.primitive.Torus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,12 +29,17 @@ class PrimitiveManager {
         return insertNode(parent, name, new Node());
     }
 
-    static final Sphere createSphere(final String parent, final String name, final Point point, final double radius) {
+    static final Sphere addSphere(final String parent, final String name, final Point point, final double radius) {
         return (Sphere) insertNode(parent, name, new Sphere(point, radius));
     }
 
     static Box addBox(String parent, String name, Point point, double length) {
         return (Box) insertNode(parent, name, new Box(point, length));
+    }
+
+    static Node createTorus(final String parent, final String name, final Point point, final double toroidal,
+                            final double polaroidal) {
+        return (Torus) insertNode(parent, name, new Torus(point, toroidal, polaroidal));
     }
 
     static Polyhedron addPolyhedron(String parent, String name, ArrayList <Point> point, ArrayList <Integer []> polygon) {
