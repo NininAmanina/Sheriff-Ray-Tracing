@@ -6,7 +6,6 @@ import glaytraser.math.Point;
 import glaytraser.math.Vector;
 
 public class Box extends Polyhedron {
-    private Vector scratchVector = new Vector();
 
     /**
      * Create a cube.
@@ -17,6 +16,7 @@ public class Box extends Polyhedron {
     public Box(Point p, double length) {
         ArrayList<Point> point = new ArrayList<Point>();
         // Define the vertices on the Box.
+        final Vector scratchVector = new Vector();
         point.add((Point) new Point(p).add((Vector) scratchVector.set(     0,      0,      0)));
         point.add((Point) new Point(p).add((Vector) scratchVector.set(length,      0,      0)));
         point.add((Point) new Point(p).add((Vector) scratchVector.set(     0, length,      0)));

@@ -10,9 +10,9 @@ import glaytraser.math.Point;
 import glaytraser.math.Vector;
 
 public class Polyhedron extends Node {
-    private Point scratchPoint = new Point();
-    private Vector scratchVector1 = new Vector();
-    private Vector scratchVector2 = new Vector();
+    final private Point m_scratchPoint = new Point();
+    final private Vector m_scratchVector1 = new Vector();
+    final private Vector m_scratchVector2 = new Vector();
     private ArrayList <Point> m_point;
     private ArrayList <Integer []> m_polygon;
     private ArrayList <Normal> m_normal;
@@ -56,8 +56,8 @@ public class Polyhedron extends Node {
         m_normal = new ArrayList<Normal>();
         // TODO:  For now, assume that no sequence of three points is collinear.
         for(Integer [] polygon : m_polygon) {
-            Normal n = (Normal) scratchVector1.set(m_point.get(polygon[0]), m_point.get(polygon[1])).crossProduct(
-                                scratchVector2.set(m_point.get(polygon[1]), m_point.get(polygon[2])));
+            Normal n = (Normal) m_scratchVector1.set(m_point.get(polygon[0]), m_point.get(polygon[1])).crossProduct(
+                                m_scratchVector2.set(m_point.get(polygon[1]), m_point.get(polygon[2])));
             n.normalize();
             m_normal.add(n);
         }
