@@ -156,12 +156,12 @@ public class LightManager {
             m_scratchVector.subtract(rayToLight.getVector());
 
             // Vector from the intersection point to the eye (camera) position.
-            double R_dot_V = m_scratchVector.dot(invertedRay.getVector());
+            double R_dot_V = Math.max(0, m_scratchVector.dot(invertedRay.getVector()));
             double phongSpecularTerm = Math.pow(R_dot_V, material.getPhong());
 
             // Uses Phong shading for materials with a specular property.
             colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getSpecular()).multiply(phongSpecularTerm));
-            colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getDiffuse()).multiply(N_dot_L));
+            colour.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(material.getDiffuse()).multiply(Math.max(0, N_dot_L)));
         }
     }
 
