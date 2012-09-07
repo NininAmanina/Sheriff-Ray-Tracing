@@ -19,22 +19,22 @@ polyhedron : plane1 {
 } {
         { 3 2 1 0 }
 }
-#        { 0 1 2 3 }
+        { 0 1 2 3 }
 surfaceproperty :plane1 mat3
 
 #polyhedron : plane2 {
-	#{  -0.3 -0.3 0.15  }
-	#{   0.3 -0.3 0.15  }
-	#{  0.3  0.3 0.15  }
-	#{  -0.3 0.3 0.15  }
+#	{  -0.3 -0.3 0.15  }
+#	{   0.3 -0.3 0.15  }
+#	{  0.3  0.3 0.15  }
+#	{  -0.3 0.3 0.15  }
 #} {
-        #{ 3 2 1 0 }
+#        { 3 2 1 0 }
 #}
 #surfaceproperty :plane2 mat4
 
 #point_light { -1.0 1.500 0.40 } { 0.9 0.9 0.9 }  none
-#point_light { 0.40 .010 0.15 } { 0.6 0.0 0.6 }  none
-point_light { 0.40 .010 0.15 } { 0.2 0.0 0.2 }  none
+#point_light { 0.40 0.010 0.15 } { 0.6 0.0 0.6 }  none
+point_light { 0.40 0.010 0.15 } { 0.2 0.0 0.2 }  none
 ambient_light { 0.2 0.2 0.2 }
 
 render : size { 400 400 } eyepoint { 0 0 7.5 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 } file nonhier.png

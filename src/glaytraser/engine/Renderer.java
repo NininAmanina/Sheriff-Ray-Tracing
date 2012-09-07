@@ -2,6 +2,7 @@ package glaytraser.engine;
 
 import glaytraser.math.Normal;
 import glaytraser.math.Point;
+import glaytraser.math.RGBTriple;
 import glaytraser.math.Utils;
 import glaytraser.math.Vector;
 
@@ -14,6 +15,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Renderer {
+    private static final RGBTriple m_factor = new RGBTriple();
+    private static final Point m_scratchPoint = new Point();
+    private static final Vector m_scratchVector = new Vector();
+    private static final Ray m_scratchRay = new Ray();
+
     /**
      * @param args
      */
@@ -23,14 +29,10 @@ public class Renderer {
 
     static int [] renderScene(Node root, BufferedImage image) {
         // The main renderer logic
-        Point scratchPoint = new Point();
-        Vector scratchVector = new Vector();
         Result result = new Result();
         Ray ray = new Ray();
-        Ray scratchRay = new Ray();
         Camera camera = Camera.getCamera();
         final Point cameraPoint = camera.getPoint();
-        ray.getPoint().set(cameraPoint);
         // Make these unit vectors
         final Vector cameraUp = camera.getUp();
         Vector verticalVector = new Vector(cameraUp).multiply(-1);
@@ -54,38 +56,21 @@ public class Renderer {
         Point scanlinePoint = new Point();
 
         int [] pixel = new int [width * height];
+        final RGBTriple rgbPixel = new RGBTriple();
         // TODO:  initialise transformation matrices at each level
         for(int r = 0; r < height; ++r) {
             scanlinePoint.set(scanlineStart);
             for(int c = 0; c < width; ++c) {
-                // Initialise Ray and Result for each pixel
-                result.init();
+                m_factor.set(1, 1, 1);
+                rgbPixel.set(0, 0, 0);
+                ray.getPoint().set(cameraPoint);
                 ray.getVector().set(ray.getPoint(), scanlinePoint).normalize();
-
-                root.intersect(result, ray, true);
-                if(result.getT() < Double.MAX_VALUE) {
-                    {
-                        final Normal normal = result.getNormal();
-                        normal.normalize();
-                        // In order to make both sides of a surface be shiny, we need to ensure that the normal is in vaguely
-                        // opposite in direction form the light ray.
-                        if(normal.dot(ray.getVector()) > 0) {
-                            normal.multiply(-1);
-                        }
-                    }
-                    // Lighting calculations
-                    Point intersectionPt = (Point) scratchPoint.set(ray.getPoint())
-                                                               .add(scratchVector.set(ray.getVector())
-                                                                                 .multiply(result.getT()));
-
-                    // Invert the ray to form the ray from intersection point to the eye
-                   	scratchRay.getPoint().set(intersectionPt);
-                    scratchRay.getVector().set(ray.getVector()).multiply(-1);
-
-                    pixel[r * width + c] = LightManager.doLighting(scratchRay, result, root);
+                if(cast(rgbPixel, result, ray, root, m_factor)) {
+                    pixel[r * width + c] = rgbPixel.getInt();
                 } else {
                     pixel[r * width + c] = 255 << 24 | (r % 256) << 16 | (c % 256) << 8;
                 }
+
                 if(image != null) {
                     image.setRGB(c, r, pixel[r * width + c]);
                 }
@@ -100,6 +85,52 @@ public class Renderer {
         frame.add(new RayTracerPanel(image, width, height));
         frame.setVisible(true);
         return pixel;
+    }
+
+    private static boolean cast(final RGBTriple pixel, final Result result, final Ray ray, final Node root, final RGBTriple factor) {
+        // Initialise Ray and Result for each pixel
+        result.init();
+
+        root.intersect(result, ray, true);
+        if(result.getT() < Double.MAX_VALUE) {
+            {
+                final Normal normal = result.getNormal();
+                normal.normalize();
+                // In order to make both sides of a surface be shiny, we need to ensure that the normal is in vaguely
+                // opposite in direction form the light ray.
+                if(normal.dot(ray.getVector()) > 0) {
+                    normal.multiply(-1);
+                }
+            }
+            // Lighting calculations
+            Point intersectionPt = (Point) m_scratchPoint.set(ray.getPoint())
+                                                         .add(m_scratchVector.set(ray.getVector())
+                                                                             .multiply(result.getT()));
+
+            // Invert the ray to form the ray from intersection point to the eye
+            m_scratchRay.getPoint().set(intersectionPt);
+            m_scratchRay.getVector().set(ray.getVector()).multiply(-1);
+
+            LightManager.doLighting(pixel, m_scratchRay, result, root, factor);
+            Material m = result.getMaterial();
+            if(m.isReflective()) {
+                factor.multiply(m.getSpecular()).multiply(0.25);
+                if(Utils.REFLECT_EPSILON < factor.get(0) &&
+                   Utils.REFLECT_EPSILON < factor.get(1) &&
+                   Utils.REFLECT_EPSILON < factor.get(2)) {
+                    ray.getPoint().set(m_scratchRay.getPoint());
+                    Vector v = m_scratchRay.getVector();
+                    // Reflected light vector due to a specular surface.
+                    double N_dot_L = result.getNormal().dot(v);
+                    m_scratchVector.set(result.getNormal()).multiply(N_dot_L).multiply(2);
+                    m_scratchVector.subtract(v);
+                    ray.getVector().set(m_scratchVector);
+                    cast(pixel, result, ray, root, factor);
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }
 

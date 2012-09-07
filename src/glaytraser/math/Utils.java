@@ -2,7 +2,7 @@ package glaytraser.math;
 
 public class Utils {
     public static final double EPSILON = 0.00000001;
-    public static final int MAX_REFLECT_DEPTH = 5;
+    public static final double REFLECT_EPSILON = 0.001;
 
 //    public static double getBestRoot(final double [] adC) {
 //        // http://en.wikipedia.org/wiki/Quartic_function
