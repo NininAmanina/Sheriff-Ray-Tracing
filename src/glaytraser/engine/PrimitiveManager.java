@@ -2,9 +2,11 @@ package glaytraser.engine;
 
 import glaytraser.math.Point;
 import glaytraser.primitive.Box;
+import glaytraser.primitive.Intersection;
 import glaytraser.primitive.Polyhedron;
 import glaytraser.primitive.Sphere;
 import glaytraser.primitive.Torus;
+import glaytraser.primitive.Union;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +27,16 @@ class PrimitiveManager {
      * @param name The name includes its parent's name, delimited by ":"
      * @return The new node
      */
-    static final Node addNode(String parent, String name) {
+    static final Node addNode(final String parent, final String name) {
         return insertNode(parent, name, new Node());
+    }
+
+    static final Node addUnion(final String parent, final String name, final String A, final String B) {
+        return insertNode(parent, name, new Union(getNode(A), getNode(B)));
+    }
+
+    static final Node addIntersection(final String parent, final String name, final String A, final String B) {
+        return insertNode(parent, name, new Intersection(getNode(A), getNode(B)));
     }
 
     static final Sphere addSphere(final String parent, final String name, final Point point, final double radius) {
@@ -42,7 +52,10 @@ class PrimitiveManager {
         return (Torus) insertNode(parent, name, new Torus(point, toroidal, polaroidal));
     }
 
-    static Polyhedron addPolyhedron(String parent, String name, ArrayList <Point> point, ArrayList <Integer []> polygon) {
+    static Polyhedron addPolyhedron(final String parent,
+                                    final String name,
+                                    final ArrayList <Point> point,
+                                    final ArrayList <Integer []> polygon) {
         return (Polyhedron) insertNode(parent, name, new Polyhedron(point, polygon));
     }
 

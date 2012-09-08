@@ -106,7 +106,7 @@ public class LightManager {
         public Point getPosition() {
             return m_position;
         }
-        
+
         public int getAttenuation() {
             return m_attenuation;
         }

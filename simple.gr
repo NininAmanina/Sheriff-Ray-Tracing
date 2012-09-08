@@ -19,5 +19,5 @@ point_light { -100.0 150.0 400.0 } { 0.9 0.9 0.9 } none
 point_light { 400.0 100.0 150.0 } { 0.7 0.0 0.7 }  none
 ambient_light { 0.3 0.3 0.3 }
 
-render : size { 300 300 } eyepoint { 0 0 800 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 } file simple.png
+render : size { 600 600 } eyepoint { 0 0 800 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 } file simple.png
 exit

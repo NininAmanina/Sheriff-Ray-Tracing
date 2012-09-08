@@ -18,22 +18,39 @@ import java.util.regex.MatchResult;
 public class Parser {
     private static final String EXIT = "exit";
     private static final String COMMENT = "#";
+
+    // Nodes
     private static final String SPHERE = "sphere";
     private static final String TORUS = "torus";
     private static final String BOX = "box";
     private static final String POLYHEDRON = "polyhedron";
     private static final String NODE = "transform";
+
+    // CSG Nodes
+    private static final String UNION = "union";
+    private static final String INTERSECTION = "intersection";
+    private static final String DIFFERENCE = "difference";
+
+    // Support types
     private static final String MATERIAL = "material";
+    private static final String SURFACE_PROPERTY = "surfaceproperty";
+
+    // Light types
     private static final String POINT_LIGHT = "point_light";
     private static final String DIRECTIONAL_LIGHT = "directional_light";
     private static final String AMBIENT_LIGHT = "ambient_light";
-    private static final String SURFACE_PROPERTY = "surfaceproperty";
+
+    // Transformations
     private static final String TRANSLATE = "translate";
     private static final String ROTATE = "rotate";
     private static final String SCALE = "scale";
+
+    // Attenuations
     private static final String NONE = "none";
     private static final String LINEAR = "linear";
     private static final String QUADRATIC = "quadratic";
+
+    // Misc
     private static final String RENDER = "render";
     private static final String TRUE = "true";
 
@@ -44,6 +61,8 @@ public class Parser {
     private static final String PAIR = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
     private static final String TRIPLE = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
     private static final String REGEX_NODE = NODE + SPACE + STRING + SPACE + STRING;
+    private static final String REGEX_UNION = UNION + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
+    private static final String REGEX_INTERSECTION = INTERSECTION + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_BOX = BOX + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE;
     private static final String REGEX_POLYHEDRON1 = POLYHEDRON + SPACE + STRING + SPACE + STRING + SPACE + "\\{";
     private static final String REGEX_POLYHEDRON2 = "} {";
@@ -94,6 +113,12 @@ public class Parser {
                         continue;
                     } else if(line.startsWith(SPHERE)) {
                         addSphere(s);
+                        continue;
+                    } else if(line.startsWith(UNION)) {
+                        addUnion(s);
+                        continue;
+                    } else if(line.startsWith(INTERSECTION)) {
+                        addIntersection(s);
                         continue;
                     } else if(line.startsWith(TORUS)) {
                         addTorus(s);
@@ -241,7 +266,7 @@ public class Parser {
         LightManager.addPointLightSource(point, light, intAtten);
     }
 
-    private static void addDirectionalLight(Scanner s) {
+    private static void addDirectionalLight(final Scanner s) {
         s.findInLine(REGEX_DIRECTIONAL_LIGHT);
         MatchResult result = s.match();
         final Vector direction = new Vector();
@@ -252,7 +277,7 @@ public class Parser {
         LightManager.addDirectionalLightSource(direction, light);
     }
 
-    private static void addAmbientLight(Scanner s) {
+    private static void addAmbientLight(final Scanner s) {
         s.findInLine(REGEX_AMBIENT_LIGHT);
         MatchResult result = s.match();
         final RGBTriple light = new RGBTriple();
@@ -261,7 +286,7 @@ public class Parser {
         LightManager.addAmbientLightSource(light);
     }
 
-    private static void addMaterial(String line, Scanner s) {
+    private static void addMaterial(final String line, final Scanner s) {
         boolean isReflective = line.endsWith(TRUE);
         s.findInLine(REGEX_MATERIAL);
         MatchResult result = s.match();
@@ -276,7 +301,7 @@ public class Parser {
         Material.addMaterial(name, diffuse, specular, phong, isReflective);
     }
 
-    private static void addSphere(Scanner s) {
+    private static void addSphere(final Scanner s) {
         s.findInLine(REGEX_SPHERE);
         MatchResult result = s.match();
         final String parent = result.group(1);
@@ -288,7 +313,7 @@ public class Parser {
         PrimitiveManager.addSphere(parent, name, point, radius);
     }
 
-    private static void addTorus(Scanner s) {
+    private static void addTorus(final Scanner s) {
         s.findInLine(REGEX_TORUS);
         MatchResult result = s.match();
         final String parent = result.group(1);
@@ -304,7 +329,7 @@ public class Parser {
         PrimitiveManager.createTorus(parent, name, point, toroidal, polaroidal);
     }
 
-    private static void addBox(Scanner s) {
+    private static void addBox(final Scanner s) {
         s.findInLine(REGEX_BOX);
         MatchResult result = s.match();
         final String parent = result.group(1);
@@ -355,13 +380,35 @@ public class Parser {
         }
     }
 
-    private static void addNode(Scanner s) {
+    private static void addNode(final Scanner s) {
         s.findInLine(REGEX_NODE);
         MatchResult result = s.match();
         final String parent = result.group(1);
         final String name = result.group(2);
         System.out.println("Adding node " + name + " to " + parent);
         PrimitiveManager.addNode(parent, name);
+    }
+
+    private static void addUnion(final Scanner s) {
+        s.findInLine(REGEX_UNION);
+        MatchResult result = s.match();
+        final String parent = result.group(1);
+        final String name = result.group(2);
+        final String A = result.group(3);
+        final String B = result.group(4);
+        System.out.println("Adding U(" + A + ", " + B + ")" + name + " to " + parent);
+        PrimitiveManager.addUnion(parent, name, A, B);
+    }
+
+    private static void addIntersection(final Scanner s) {
+        s.findInLine(REGEX_INTERSECTION);
+        MatchResult result = s.match();
+        final String parent = result.group(1);
+        final String name = result.group(2);
+        final String A = result.group(3);
+        final String B = result.group(4);
+        System.out.println("Adding I(" + A + ", " + B + ")" + name + " to " + parent);
+        PrimitiveManager.addIntersection(parent, name, A, B);
     }
 
     private static int getTriple(final AbstractTriple t, final int startIndex, final MatchResult result) {

@@ -32,4 +32,10 @@ public class Result {
         m_normal.clear();
         m_t = Double.MAX_VALUE;
     }
+
+    public void set(Result result) {
+        m_t = result.getT();
+        m_normal.set(result.getNormal());
+        m_material = result.getMaterial();
+    }
 }
