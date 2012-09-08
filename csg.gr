@@ -19,6 +19,11 @@ surfaceproperty :s3 mat1
 sphere : s4 { 5 0 -10 } 10
 surfaceproperty :s4 mat2
 intersection :scene intersect :s3 :s4
+sphere : s5 { -5 -30 -10 } 10
+surfaceproperty :s5 mat1
+sphere : s6 { 5 -30 -10 } 10
+surfaceproperty :s6 mat2
+difference :scene intersect :s5 :s6
 
 point_light { -10.0 15.00 40.0 } { 0.9 0.9 0.9 }  none
 point_light { 40.0 10.0 15.0 } { 0.6 0.0 0.6 }  none

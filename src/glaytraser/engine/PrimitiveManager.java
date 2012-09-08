@@ -2,6 +2,7 @@ package glaytraser.engine;
 
 import glaytraser.math.Point;
 import glaytraser.primitive.Box;
+import glaytraser.primitive.Difference;
 import glaytraser.primitive.Intersection;
 import glaytraser.primitive.Polyhedron;
 import glaytraser.primitive.Sphere;
@@ -24,7 +25,7 @@ class PrimitiveManager {
      * 
      * Create a new Node (basically a co-ordinate system) and insert it in the tree of Nodes.
      * 
-     * @param name The name includes its parent's name, delimited by ":"
+     * @param name The name includes its parent's name, with the hierarchy delimited by ":"
      * @return The new node
      */
     static final Node addNode(final String parent, final String name) {
@@ -37,6 +38,10 @@ class PrimitiveManager {
 
     static final Node addIntersection(final String parent, final String name, final String A, final String B) {
         return insertNode(parent, name, new Intersection(getNode(A), getNode(B)));
+    }
+
+    static final Node addDifference(final String parent, final String name, final String A, final String B) {
+        return insertNode(parent, name, new Difference(getNode(A), getNode(B)));
     }
 
     static final Sphere addSphere(final String parent, final String name, final Point point, final double radius) {

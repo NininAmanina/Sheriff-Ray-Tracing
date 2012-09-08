@@ -63,6 +63,7 @@ public class Parser {
     private static final String REGEX_NODE = NODE + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_UNION = UNION + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_INTERSECTION = INTERSECTION + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
+    private static final String REGEX_DIFFERENCE = DIFFERENCE + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_BOX = BOX + SPACE + STRING + SPACE + STRING + SPACE + TRIPLE + SPACE + DOUBLE;
     private static final String REGEX_POLYHEDRON1 = POLYHEDRON + SPACE + STRING + SPACE + STRING + SPACE + "\\{";
     private static final String REGEX_POLYHEDRON2 = "} {";
@@ -119,6 +120,9 @@ public class Parser {
                         continue;
                     } else if(line.startsWith(INTERSECTION)) {
                         addIntersection(s);
+                        continue;
+                    } else if(line.startsWith(DIFFERENCE)) {
+                        addDifference(s);
                         continue;
                     } else if(line.startsWith(TORUS)) {
                         addTorus(s);
@@ -409,6 +413,17 @@ public class Parser {
         final String B = result.group(4);
         System.out.println("Adding I(" + A + ", " + B + ")" + name + " to " + parent);
         PrimitiveManager.addIntersection(parent, name, A, B);
+    }
+
+    private static void addDifference(final Scanner s) {
+        s.findInLine(REGEX_DIFFERENCE);
+        MatchResult result = s.match();
+        final String parent = result.group(1);
+        final String name = result.group(2);
+        final String A = result.group(3);
+        final String B = result.group(4);
+        System.out.println("Adding D(" + A + ", " + B + ")" + name + " to " + parent);
+        PrimitiveManager.addDifference(parent, name, A, B);
     }
 
     private static int getTriple(final AbstractTriple t, final int startIndex, final MatchResult result) {
