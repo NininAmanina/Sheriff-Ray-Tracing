@@ -57,7 +57,6 @@ public class Renderer {
 
         int [] pixel = new int [width * height];
         final RGBTriple rgbPixel = new RGBTriple();
-        // TODO:  initialise transformation matrices at each level
         for(int r = 0; r < height; ++r) {
             scanlinePoint.set(scanlineStart);
             for(int c = 0; c < width; ++c) {

@@ -59,14 +59,15 @@ public class Torus extends Node {
         // Retrieve the smallest positive root of the quadratic.
         double [] roots = PolyRoots.quarticRoots(adC[0], adC[1], adC[2], adC[3]);
         double dRoot = Double.MAX_VALUE;
-        for(int index = 0, ii = roots.length; i < ii; ++i) {
-            dRoot = Math.min(dRoot, Math.max(0, roots[index]));
+        for(int index = 0, ii = roots.length; index < ii; ++index) {
+            if(roots[index] > Utils.EPSILON) {
+                dRoot = Math.min(dRoot, roots[index]);
+            }
         }
 
         // If there is a real root to this quadratic, return the intersection
         // point of the ray with the surface.
-        double tempInter = result.getT();
-        if(Utils.EPSILON < dRoot && (tempInter < Utils.EPSILON || tempInter > dRoot)) {
+        if(result.getT() > dRoot) {
             result.setT(dRoot);
             m_scratchVector.set(ray.getVector());
             m_scratchVector.multiply(dRoot);
@@ -81,7 +82,7 @@ public class Torus extends Node {
             d = m_scratchVector.dot(m_scratchVector) - f - g;
             e = d + f + f;
             result.getNormal().set(d * a, d * b, e * c);
-            result.setMaterial( getMaterial() );
+            result.setMaterial(getMaterial());
         }
     }
 

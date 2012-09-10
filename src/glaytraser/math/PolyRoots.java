@@ -414,7 +414,7 @@ public class PolyRoots {
         } else { /* Three real roots */
             double [] roots = new double [3];
             s = Math.sqrt(-u / 3);
-            if (s != 0) {
+            if (s > Utils.EPSILON) {
                 t = -0.5 * v / (s * s * s);
                 if (TABLE_LOOKUP) {
                     cosk = cosk_lookup(t);
@@ -466,11 +466,11 @@ public class PolyRoots {
         h1 = (b - y) * 0.5;
         if(y < 0) {
             n = a * a - 4 * y;
-            if( n <= 0 ) {
+            if(n <= 0) {
                 return new double [0];
             }
             g2 = Math.sqrt(n);
-            if( g2 == 0 ) {
+            if(g2 < Utils.EPSILON) {
                 return new double [0];
             }
             h2 = (a * (b - y) * 0.5 - c) / g2;
@@ -481,7 +481,7 @@ public class PolyRoots {
                 return new double [0];
             }
             h2 = Math.sqrt(m);
-            if(h2 == 0) {
+            if(h2 < Utils.EPSILON) {
                 return new double [0];
             }
             g2 = (a * h1 - c) / h2;
@@ -496,7 +496,7 @@ public class PolyRoots {
                     return new double [0];
                 }
                 h2 = Math.sqrt(m);
-                if(h2 == 0) { 
+                if(h2 < Utils.EPSILON) { 
                     return new double [0];
                 }
                 g2 = (a * h1 - c) / h2;
@@ -506,7 +506,7 @@ public class PolyRoots {
                     return new double [0];
                 }
                 g2 = Math.sqrt(n);
-                if (g2 == 0) { 
+                if (g2 < Utils.EPSILON) { 
                     return new double [0];
                 }
                 h2 = (a * (b - y) * 0.5 - c) / g2;
@@ -516,17 +516,17 @@ public class PolyRoots {
 
         if(Math.signum(g1) == Math.signum(g2)) {
             G = g1 + g2;
-            g = (G == 0) ? g1 - g2 : y / G;
+            g = (Math.abs(G) < Utils.EPSILON) ? g1 - g2 : y / G;
         } else {
             g = g1 - g2;
-            G = (g == 0) ? g1 + g2 : y / g;
+            G = (Math.abs(g) < Utils.EPSILON) ? g1 + g2 : y / g;
         }
         if(Math.signum(h1) == Math.signum(h2)) {
             H = h1 + h2;
-            h = (H == 0) ? h1 - h2  : d / H;
+            h = (Math.abs(H) < Utils.EPSILON) ? h1 - h2 : d / H;
         } else {
             h = h1 - h2;
-            H = (h == 0) ? h1 + h2  : d / h;
+            H = (Math.abs(h) < Utils.EPSILON) ? h1 + h2 : d / h;
         }
 
         double [] roots1 = quadraticRoots(1.0, G, H);
