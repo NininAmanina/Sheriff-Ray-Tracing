@@ -25,6 +25,7 @@ public class Parser {
     private static final String BOX = "box";
     private static final String POLYHEDRON = "polyhedron";
     private static final String NODE = "transform";
+    private static final String INSTANCE = "instance";
 
     // CSG Nodes
     private static final String UNION = "union";
@@ -61,6 +62,7 @@ public class Parser {
     private static final String PAIR = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
     private static final String TRIPLE = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
     private static final String REGEX_NODE = NODE + SPACE + STRING + SPACE + STRING;
+    private static final String REGEX_INSTANCE = UNION + SPACE + STRING + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_UNION = UNION + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_INTERSECTION = INTERSECTION + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_DIFFERENCE = DIFFERENCE + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
@@ -114,6 +116,9 @@ public class Parser {
                         continue;
                     } else if(line.startsWith(SPHERE)) {
                         addSphere(s);
+                        continue;
+                    } else if(line.startsWith(INSTANCE)) {
+                        addInstance(s);
                         continue;
                     } else if(line.startsWith(UNION)) {
                         addUnion(s);
@@ -391,6 +396,16 @@ public class Parser {
         final String name = result.group(2);
         System.out.println("Adding node " + name + " to " + parent);
         PrimitiveManager.addNode(parent, name);
+    }
+
+    private static void addInstance(final Scanner s) {
+        s.findInLine(REGEX_INSTANCE);
+        MatchResult result = s.match();
+        final String parent = result.group(1);
+        final String name = result.group(2);
+        final String A = result.group(3);
+        System.out.println("Adding Instance(" + A + ")" + name + " to " + parent);
+        PrimitiveManager.addInstance(parent, name, A);
     }
 
     private static void addUnion(final Scanner s) {

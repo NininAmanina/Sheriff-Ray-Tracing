@@ -3,6 +3,7 @@ package glaytraser.engine;
 import glaytraser.math.Point;
 import glaytraser.primitive.Box;
 import glaytraser.primitive.Difference;
+import glaytraser.primitive.Instance;
 import glaytraser.primitive.Intersection;
 import glaytraser.primitive.Polyhedron;
 import glaytraser.primitive.Sphere;
@@ -30,6 +31,10 @@ class PrimitiveManager {
      */
     static final Node addNode(final String parent, final String name) {
         return insertNode(parent, name, new Node());
+    }
+
+    static final Node addInstance(final String parent, final String name, final String A) {
+        return insertNode(parent, name, new Instance(getNode(A)));
     }
 
     static final Node addUnion(final String parent, final String name, final String A, final String B) {
