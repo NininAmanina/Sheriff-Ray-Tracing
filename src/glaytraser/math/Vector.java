@@ -101,13 +101,26 @@ public class Vector extends AbstractTriple {
     /**
      * Take the cross product of this Vector with another (this X v1)
      *
-     * @param v1 The other vector
-     * @return The cross product, as a vector
+     * @param v1 The other Vector
+     * @return The cross product, as a Normal
      */
-    public Normal crossProduct(Vector v1) {
-        return new Normal(value[1] * v1.value[2] - value[2] * v1.value[1], 
-                          value[2] * v1.value[0] - value[0] * v1.value[2],
-                          value[0] * v1.value[1] - value[1] * v1.value[0]);
+    public Normal crossProduct(final Vector v1) {
+        final Normal normal = new Normal();
+        return crossProduct(v1, normal);
+    }
+
+    /**
+     * Take the cross product of this Vector with another (this X v1)
+     *
+     * @param v1 The other Vector
+     * @param normal The normal, the values of which shall be set
+     * @return <code>normal</code>
+     */
+    public Normal crossProduct(final Vector v1, final Normal normal) {
+        normal.set(value[1] * v1.value[2] - value[2] * v1.value[1], 
+                   value[2] * v1.value[0] - value[0] * v1.value[2],
+                   value[0] * v1.value[1] - value[1] * v1.value[0]);
+        return normal;
     }
 
     /**

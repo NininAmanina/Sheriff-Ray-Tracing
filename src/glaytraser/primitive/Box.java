@@ -31,9 +31,9 @@ public class Box extends Polyhedron {
         polygon.add(new Integer [] { 0, 1, 3, 2 });
         polygon.add(new Integer [] { 0, 4, 5, 1 });
         polygon.add(new Integer [] { 0, 2, 6, 4 });
-        polygon.add(new Integer [] { 7, 3, 1, 5 });
-        polygon.add(new Integer [] { 7, 6, 2, 3 });
-        polygon.add(new Integer [] { 7, 5, 4, 6 });
+        polygon.add(new Integer [] { 7, 5, 1, 3 });
+        polygon.add(new Integer [] { 7, 3, 2, 6 });
+        polygon.add(new Integer [] { 7, 6, 4, 5 });
 
         // Store the Box as a Polyhedron
         init(point, polygon);
