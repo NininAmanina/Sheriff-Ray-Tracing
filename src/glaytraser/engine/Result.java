@@ -2,7 +2,7 @@ package glaytraser.engine;
 
 import glaytraser.math.*;
 
-public class Result {
+public final class Result {
     private Normal m_normal = new Normal();
     private double m_t;
     private Material m_material;
@@ -15,7 +15,7 @@ public class Result {
         return m_t;
     }
 
-    public void setT(double t) {
+    public void setT(final double t) {
         m_t = t;
     }
     
@@ -23,7 +23,7 @@ public class Result {
         return m_material;
     }
 
-    public void setMaterial(Material material) {
+    public void setMaterial(final Material material) {
         m_material = material;
     }
 
@@ -33,7 +33,7 @@ public class Result {
         m_t = Double.MAX_VALUE;
     }
 
-    public void set(Result result) {
+    public void set(final Result result) {
         m_t = result.getT();
         m_normal.set(result.getNormal());
         m_material = result.getMaterial();

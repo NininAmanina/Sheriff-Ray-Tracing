@@ -29,12 +29,12 @@ public abstract class AbstractTriple {
     /**
      * Multiply this AbstractTriple by a Matrix.
      *
-     * By default, it is premupltipled.  This behaviour may be overridden if necessary.
+     * By default, it is premultiplied.  This behaviour may be overridden if necessary.
      * @param m The matrix.
      */
     public void multiply(Matrix m) {
         // Copy our current values into the scratch space for the multiplication
-        for(int i = 0; i < 3; ++i) {
+        for(int i = 0; i < 4; ++i) {
             scratch[i] = m.getRow(i).dot(this);
         }
         System.arraycopy(scratch, 0, value, 0, 4);
@@ -58,8 +58,7 @@ public abstract class AbstractTriple {
     // Note that this is not type-safe -- we can initialise a Point with the XYZ values of
     // a vector, et al.
     public AbstractTriple set(AbstractTriple t) {
-        set(t.value[0], t.value[1], t.value[2]);
-        return this;
+        return set(t.value[0], t.value[1], t.value[2]);
     }
 
     public double get(int index) {

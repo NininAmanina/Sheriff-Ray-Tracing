@@ -2,11 +2,11 @@ package glaytraser.math;
 
 import glaytraser.math.AbstractTriple;
 
-public class Row extends Vector {
-    public Row() {
+public class Column extends Vector {
+    public Column() {
     }
 
-    Row(double d1, double d2, double d3, double d4) {
+    Column(double d1, double d2, double d3, double d4) {
         set(d1, d2, d3, d4);
     }
 

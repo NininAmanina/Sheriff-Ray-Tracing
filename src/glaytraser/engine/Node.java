@@ -5,18 +5,22 @@ import java.util.ArrayList;
 import glaytraser.math.*;
 
 public class Node {
-    Matrix m_txMatrix = new Matrix();
-    Ray m_txRay = new Ray();
-    Normal m_scratchNormal = new Normal();
-    ArrayList<Node> m_child = new ArrayList<Node>();
-    Material m_material;
+    // M^-1
+    private final Matrix m_txToNode = new Matrix();
+    // M^T
+    private final Matrix m_txToWorld = new Matrix();
+    private final Vector m_scratchVector = new Vector();
+    private final Matrix m_scratchMatrix = new Matrix();
+    private final Ray m_txRay = new Ray();
+    private final ArrayList<Node> m_child = new ArrayList<Node>();
+    private Material m_material;
 
     public Node() {
     }
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
-    public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+    protected void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         /*
         Each subclass of Node must have something like the following code within it --
         the t value, the material properties and the normal must be set at the same time.
@@ -42,16 +46,17 @@ public class Node {
      * @return Whether this node or any of its children intersects with this Ray.
      */
     public final void intersect(final Result result, final Ray ray, final boolean calcNormal) {
-        // Handle all of the children firstly
-        for(Node child : m_child) {
-            child.intersect(result, ray, calcNormal);
-        }
-
         // Now do our transformation
         m_txRay.init(ray);
-        m_txRay.transform(m_txMatrix);
+        m_txRay.transform(m_txToNode);
+
+        // Handle all of the children firstly
+        for(Node child : m_child) {
+            child.intersect(result, m_txRay, calcNormal);
+        }
 
         rayIntersect(result, m_txRay, calcNormal);
+        result.getNormal().multiply(m_txToWorld);
     }
 
     /**
@@ -60,7 +65,18 @@ public class Node {
      * @param translate The Vector by which to translate this Node.
      */
     public final void translate(final Vector translate) {
-        // TODO:  Implement translate
+        // To Node tx
+        m_scratchMatrix.identity();
+        for(int i = 0; i < 3; ++i) {
+            m_scratchMatrix.set(i,  3, -translate.get(i));
+        }
+        m_txToNode.postMultiply(m_scratchMatrix);
+        // Normal tx
+        m_scratchMatrix.identity();
+        for(int i = 0; i < 3; ++i) {
+            m_scratchMatrix.set(3,  i, translate.get(i));
+        }
+        m_txToWorld.postMultiply(m_scratchMatrix);
     }
 
     /**
@@ -70,7 +86,23 @@ public class Node {
      * @param scaleFactor The amount to scale in x, y, and z.
      */
     public final void scale(final Point scalePoint, final Vector scaleFactor) {
-        // TODO:  Implement scale
+        // Firstly translate to the origin
+        m_scratchVector.set(m_txToNode.getColumn(3));
+        translate(m_scratchVector);
+        // To Node tx
+        m_scratchMatrix.identity();
+        for(int i = 0; i < 3; ++i) {
+            m_scratchMatrix.set(i, i, 1.0 / scaleFactor.get(i));
+        }
+        m_txToNode.postMultiply(m_scratchMatrix);
+        m_scratchMatrix.identity();
+        // Normal tx
+        for(int i = 0; i < 3; ++i) {
+            m_scratchMatrix.set(i, i, scaleFactor.get(i));
+        }
+        m_txToWorld.postMultiply(m_scratchMatrix);
+        // Translate back
+        translate(m_scratchVector.multiply(-1));
     }
 
     /**
@@ -80,7 +112,29 @@ public class Node {
      * @param angle The angle, in radians, which we need to rotate
      */
     public final void rotate(final int axis, final double angle) {
-        // TODO:  Implement scale
+        // Firstly translate to the origin
+        m_scratchVector.set(m_txToNode.getColumn(3));
+        translate(m_scratchVector);
+        m_scratchMatrix.identity();
+        final int axisP = (axis + 1) % 3;
+        final int axisPP = (axis + 2) % 3;
+        final double cos = Math.cos(angle);
+        final double sin = Math.sin(angle);
+        // To Node tx
+        m_scratchMatrix.set(axisP, axisP, cos);
+        m_scratchMatrix.set(axisP, axisPP, sin);
+        m_scratchMatrix.set(axisPP, axisP, -sin);
+        m_scratchMatrix.set(axisPP, axisPP, cos);
+        m_txToNode.postMultiply(m_scratchMatrix);
+        // Normal tx
+        m_scratchMatrix.identity();
+        m_scratchMatrix.set(axisP, axisP, cos);
+        m_scratchMatrix.set(axisP, axisPP, -sin);
+        m_scratchMatrix.set(axisPP, axisP, sin);
+        m_scratchMatrix.set(axisPP, axisPP, cos);
+        m_txToWorld.postMultiply(m_scratchMatrix);
+        // Translate back
+        translate(m_scratchVector.multiply(-1));
     }
 
     public void addChild(Node node) {

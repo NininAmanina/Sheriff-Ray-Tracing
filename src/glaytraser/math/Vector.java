@@ -49,9 +49,7 @@ public class Vector extends AbstractTriple {
      * @return A reference to this vector, for chaining purposes
      */
     public Vector set(Vector v) {
-        for(int i = 0; i < 3; ++i) {
-            value[i] = v.value[i];
-        }
+        System.arraycopy(v.value, 0, value, 0, 4);
         return this;
     }
 
@@ -65,9 +63,9 @@ public class Vector extends AbstractTriple {
      * @throws IllegalArgumentException if this is not a Row but t is a Point
      */
     public double dot(AbstractTriple t) {
-        if(t instanceof Point && !(this instanceof Row)) {
+        if(t instanceof Point && !(this instanceof Row) && !(this instanceof Column)) {
             throw new IllegalArgumentException(
-                "Cannot take the dot product of a Point with anything but a Row!");
+                "Cannot take the dot product of a Point with anything but a Row or Column!");
         }
         double sum = 0;
         for(int i = 0; i < 4; ++i) {
@@ -92,10 +90,9 @@ public class Vector extends AbstractTriple {
      * @return A reference to this vector, for chaining purposes
      */
     public Vector set(Point p1, Point p2) {
-        set(p2.value[0] - p1.value[0],
-            p2.value[1] - p1.value[1],
-            p2.value[2] - p1.value[2]);
-        return this;
+        return (Vector) set(p2.value[0] - p1.value[0],
+                            p2.value[1] - p1.value[1],
+                            p2.value[2] - p1.value[2]);
     }
 
     /**

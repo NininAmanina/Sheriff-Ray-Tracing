@@ -19,9 +19,9 @@ public class Intersection extends Node {
     // @result We expect null for the light-source intersection routine
     public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         m_scratchResultA.init();
-        m_nodeA.rayIntersect(m_scratchResultA, ray, calcNormal);
+        m_nodeA.intersect(m_scratchResultA, ray, calcNormal);
         m_scratchResultB.init();
-        m_nodeB.rayIntersect(m_scratchResultB, ray, calcNormal);
+        m_nodeB.intersect(m_scratchResultB, ray, calcNormal);
         double tA = m_scratchResultA.getT();
         double tB = m_scratchResultB.getT();
         if(tA == Double.MAX_VALUE || tB == Double.MAX_VALUE) {

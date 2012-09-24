@@ -4,24 +4,24 @@ import glaytraser.math.*;
 
 public class Ray {
 	// Should be a unit vector when the ray is cast
-    private Vector m_unitVector = new Vector(); 
+    private Vector m_vector = new Vector(); 
     private Point m_point = new Point();
 
     public Vector getVector() {
-        return m_unitVector;
+        return m_vector;
     }
 
     public Point getPoint() {
         return m_point;
     }
 
-    public void init(Ray ray) {
+    public void init(final Ray ray) {
         m_point.set(ray.getPoint());
-        m_unitVector.set(ray.getVector());
+        m_vector.set(ray.getVector());
     }
 
-    public void transform(Matrix txMatrix) {
+    public void transform(final Matrix txMatrix) {
         m_point.multiply(txMatrix);
-        m_unitVector.multiply(txMatrix);
+        m_vector.multiply(txMatrix);
     }
 }
