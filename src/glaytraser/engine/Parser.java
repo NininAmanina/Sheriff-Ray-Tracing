@@ -62,7 +62,7 @@ public class Parser {
     private static final String PAIR = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
     private static final String TRIPLE = "\\{" + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + DOUBLE + SPACE + "\\}";
     private static final String REGEX_NODE = NODE + SPACE + STRING + SPACE + STRING;
-    private static final String REGEX_INSTANCE = UNION + SPACE + STRING + SPACE + STRING + SPACE + STRING;
+    private static final String REGEX_INSTANCE = INSTANCE + SPACE + STRING + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_UNION = UNION + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_INTERSECTION = INTERSECTION + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
     private static final String REGEX_DIFFERENCE = DIFFERENCE + SPACE + STRING + SPACE + STRING + SPACE + STRING + SPACE + STRING;
