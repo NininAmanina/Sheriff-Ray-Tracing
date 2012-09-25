@@ -22,7 +22,7 @@ public class Difference extends Node {
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
-    public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+    public boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         m_scratchResultA.init();
         m_nodeA.intersect(m_scratchResultA, ray, calcNormal);
         m_scratchResultB.init();
@@ -30,7 +30,7 @@ public class Difference extends Node {
         double tA = m_scratchResultA.getT();
         double tB = m_scratchResultB.getT();
         if(tA == Double.MAX_VALUE) {
-            return;
+            return false;
         } else if(tA < tB) {
             result.set(m_scratchResultA);
         } else {
@@ -40,5 +40,6 @@ public class Difference extends Node {
         if(getMaterial() != null) {
             result.setMaterial(getMaterial());
         }
+        return true;
     }
 }

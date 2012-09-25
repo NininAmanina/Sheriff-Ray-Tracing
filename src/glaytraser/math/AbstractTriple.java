@@ -8,7 +8,7 @@ public abstract class AbstractTriple {
     /*package*/ final double [] value = new double [4];
 
     // Scratch space for multiplying matrices
-    private final double [] scratch = new double [4];
+    /*package*/ final double [] scratch = new double [4];
 
     /**
      * Declare a null AbstractTriple.
@@ -22,7 +22,7 @@ public abstract class AbstractTriple {
      * @param y
      * @param z
      */
-    public AbstractTriple(double x, double y, double z) {
+    public AbstractTriple(final double x, final double y, final double z) {
         set(x, y, z);
     }
 
@@ -32,7 +32,7 @@ public abstract class AbstractTriple {
      * By default, it is premultiplied.  This behaviour may be overridden if necessary.
      * @param m The matrix.
      */
-    public void multiply(Matrix m) {
+    public void multiply(final Matrix m) {
         // Copy our current values into the scratch space for the multiplication
         for(int i = 0; i < 4; ++i) {
             scratch[i] = m.getRow(i).dot(this);
@@ -47,7 +47,7 @@ public abstract class AbstractTriple {
      * @param d The value
      * @return A reference to this vector, for chaining purposes
      */
-    public AbstractTriple set(int i, double d) {
+    public AbstractTriple set(final int i, final double d) {
         if(i < 0 || i > 2) {
             throw new IllegalArgumentException("index " + i + "is out of bounds");
         }
@@ -57,29 +57,29 @@ public abstract class AbstractTriple {
 
     // Note that this is not type-safe -- we can initialise a Point with the XYZ values of
     // a vector, et al.
-    public AbstractTriple set(AbstractTriple t) {
+    public AbstractTriple set(final AbstractTriple t) {
         return set(t.value[0], t.value[1], t.value[2]);
     }
 
-    public double get(int index) {
+    public double get(final int index) {
         return value[index];
     }
 
-    public AbstractTriple set(double d0, double d1, double d2) {
+    public AbstractTriple set(final double d0, final double d1, final double d2) {
         value[0] = d0;
         value[1] = d1;
         value[2] = d2;
         return this;
     }
 
-    public AbstractTriple subtract(Vector v) {
+    public AbstractTriple subtract(final Vector v) {
         for(int i = 0; i < 3; ++i) {
             value[i] -= v.value[i];
         }
         return this;
     }
     
-    public AbstractTriple add(Vector v) {
+    public AbstractTriple add(final Vector v) {
         for(int i = 0; i < 3; ++i) {
             value[i] += v.value[i];
         }

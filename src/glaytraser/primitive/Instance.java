@@ -13,14 +13,12 @@ public class Instance extends Node {
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
-    public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+    public boolean rayIntersect(final Result result, final Ray ray, final boolean calcNormal) {
         final double t = result.getT();
-        m_instance.intersect(result, ray, calcNormal);
-        if(result.getT() > t) {
-            return;
-        }
+        final boolean success = m_instance.intersect(result, ray, calcNormal);
         if(getMaterial() != null) {
             result.setMaterial(getMaterial());
         }
+        return success;
     }
 }

@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import glaytraser.math.*;
 
 public class Node {
-    // M^-1
+    // M^-1, which is also M^T
     private final Matrix m_txToNode = new Matrix();
-    // M^T
-    private final Matrix m_txToWorld = new Matrix();
     private final Vector m_scratchVector = new Vector();
     private final Matrix m_scratchMatrix = new Matrix();
     private final Ray m_txRay = new Ray();
@@ -20,7 +18,7 @@ public class Node {
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
-    protected void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+    protected boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         /*
         Each subclass of Node must have something like the following code within it --
         the t value, the material properties and the normal must be set at the same time.
@@ -34,6 +32,7 @@ public class Node {
             result.setMaterial(m_material);
         }
         */
+        return false;
     }
 
     /**
@@ -45,18 +44,22 @@ public class Node {
      *        then result is ignored (and may be null).
      * @return Whether this node or any of its children intersects with this Ray.
      */
-    public final void intersect(final Result result, final Ray ray, final boolean calcNormal) {
+    public final boolean intersect(final Result result, final Ray ray, final boolean calcNormal) {
         // Now do our transformation
         m_txRay.init(ray);
         m_txRay.transform(m_txToNode);
+        boolean success = false;
 
         // Handle all of the children firstly
         for(Node child : m_child) {
-            child.intersect(result, m_txRay, calcNormal);
+            success |= child.intersect(result, m_txRay, calcNormal);
         }
 
-        rayIntersect(result, m_txRay, calcNormal);
-        result.getNormal().multiply(m_txToWorld);
+        success |= rayIntersect(result, m_txRay, calcNormal);
+        if(success) {
+            result.getNormal().multiply(m_txToNode);
+        }
+        return success;
     }
 
     /**
@@ -68,15 +71,9 @@ public class Node {
         // To Node tx
         m_scratchMatrix.identity();
         for(int i = 0; i < 3; ++i) {
-            m_scratchMatrix.set(i,  3, -translate.get(i));
+            m_scratchMatrix.set(i, 3, -translate.get(i));
         }
         m_txToNode.postMultiply(m_scratchMatrix);
-        // Normal tx
-        m_scratchMatrix.identity();
-        for(int i = 0; i < 3; ++i) {
-            m_scratchMatrix.set(3,  i, translate.get(i));
-        }
-        m_txToWorld.postMultiply(m_scratchMatrix);
     }
 
     /**
@@ -86,6 +83,7 @@ public class Node {
      * @param scaleFactor The amount to scale in x, y, and z.
      */
     public final void scale(final Point scalePoint, final Vector scaleFactor) {
+        // TODO:  use the scalePoint
         // Firstly translate to the origin
         m_scratchVector.set(m_txToNode.getColumn(3));
         translate(m_scratchVector);
@@ -95,12 +93,6 @@ public class Node {
             m_scratchMatrix.set(i, i, 1.0 / scaleFactor.get(i));
         }
         m_txToNode.postMultiply(m_scratchMatrix);
-        m_scratchMatrix.identity();
-        // Normal tx
-        for(int i = 0; i < 3; ++i) {
-            m_scratchMatrix.set(i, i, scaleFactor.get(i));
-        }
-        m_txToWorld.postMultiply(m_scratchMatrix);
         // Translate back
         translate(m_scratchVector.multiply(-1));
     }
@@ -126,22 +118,15 @@ public class Node {
         m_scratchMatrix.set(axisPP, axisP, -sin);
         m_scratchMatrix.set(axisPP, axisPP, cos);
         m_txToNode.postMultiply(m_scratchMatrix);
-        // Normal tx
-        m_scratchMatrix.identity();
-        m_scratchMatrix.set(axisP, axisP, cos);
-        m_scratchMatrix.set(axisP, axisPP, -sin);
-        m_scratchMatrix.set(axisPP, axisP, sin);
-        m_scratchMatrix.set(axisPP, axisPP, cos);
-        m_txToWorld.postMultiply(m_scratchMatrix);
         // Translate back
         translate(m_scratchVector.multiply(-1));
     }
 
-    public void addChild(Node node) {
+    public void addChild(final Node node) {
         m_child.add(node);
     }
 
-    public Node setMaterial(Material material) {
+    public Node setMaterial(final Material material) {
         m_material = material;
         return this;
     }

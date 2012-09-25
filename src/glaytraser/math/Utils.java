@@ -1,7 +1,7 @@
 package glaytraser.math;
 
 public class Utils {
-    public static final double EPSILON = 0.00000001;
+    public static final double EPSILON = 0.0000000001;
     public static final double REFLECT_EPSILON = 0.001;
 
 //    public static double getBestRoot(final double [] adC) {

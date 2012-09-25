@@ -24,19 +24,19 @@ public final class Matrix {
         identity();
     }
 
-    public Row getRow(int i) {
+    public Row getRow(final int i) {
         return m_row[i];
     }
 
-    public Column getColumn(int i) {
+    public Column getColumn(final int i) {
         return m_column[i];
     }
 
-    public double get(int row, int column) {
+    public double get(final int row, final int column) {
         return m_row[row].get(column);
     }
 
-    public void set(int row, int column, double value) {
+    public void set(final int row, final int column, final double value) {
         m_row[row].set(column, value);
         m_column[column].set(row, value);
     }
@@ -52,7 +52,7 @@ public final class Matrix {
         m_column[3].set(0, 0, 0, 1);
     }
 
-    public void postMultiply(Matrix m) {
+    public void postMultiply(final Matrix m) {
         for(int r = 0; r < 4; ++r) {
             final Row row = m_row[r];
             for(int c = 0; c < 4; ++c) {
@@ -62,7 +62,18 @@ public final class Matrix {
         }
         copyRowsIntoColumns();
     }
-    
+
+    public void preMultiply(final Matrix m) {
+        for(int r = 0; r < 4; ++r) {
+            final Row row = m.getRow(r);
+            for(int c = 0; c < 4; ++c) {
+                m_scratchRow.set(c, row.dot(m_column[c]));
+            }
+            m_row[r].set(m_scratchRow);
+        }
+        copyRowsIntoColumns();
+    }
+
     private void copyRowsIntoColumns() {
         for(int c = 0; c < 4; ++c) {
             m_column[c].set(m_row[0].get(c), m_row[1].get(c), m_row[2].get(c), m_row[3].get(c));

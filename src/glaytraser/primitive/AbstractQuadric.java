@@ -56,7 +56,7 @@ public abstract class AbstractQuadric extends Node {
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
-    public final void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+    public final boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         /*
          * m_A * pc_x * pc_x + m_A * 2 * v_x * pc_x * t + m_A * v_x * v_x * t^2 +
          * m_B * pc_x * pc_y + m_B * (v_x * pc_y + v_y * pc_x) * t + m_B * v_x * v_y * t^2 +
@@ -85,7 +85,7 @@ public abstract class AbstractQuadric extends Node {
                          m_F * pc_z * pc_z + m_G * pc_x + m_H * pc_y + m_I * pc_z + m_J;
         final double [] tArray = Utils.quadraticRoot(a, b, c);
         if(tArray == null) {
-            return;
+            return false;
         }
 
         double t;
@@ -99,7 +99,6 @@ public abstract class AbstractQuadric extends Node {
         if(t > Utils.EPSILON && t < result.getT()) {
             result.setT(t);
             if(calcNormal) {
-                // TODO: Transform the normal into the world space.
                 // TODO: Use generics to avoid the explicit cast below.
                 m_scratchPoint.set(ray.getPoint()).add(
                         m_scratchVector.set(ray.getVector()).multiply(t));
@@ -110,6 +109,7 @@ public abstract class AbstractQuadric extends Node {
                 result.setMaterial(getMaterial());
             }
         }
+        return true;
     }
 
     /**

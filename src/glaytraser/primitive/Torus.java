@@ -24,32 +24,32 @@ public class Torus extends Node {
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
-    public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+    public boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         Vector rayVector = ray.getVector();
-        double adC[] = new double [4];
+        final double [] adC = new double [4];
 
-        double a = m_toroidal;
-        double b = m_polaroidal * m_polaroidal;
+        final double a = m_toroidal;
+        final double b = m_polaroidal * m_polaroidal;
         m_scratchVector.set(m_centre, ray.getPoint());
-        double x = m_scratchVector.get(0);
-        double y = m_scratchVector.get(1);
-        double z = m_scratchVector.get(2);
-        double c = rayVector.get(0) * x;
-        double d = rayVector.get(1) * y;
-        double e = rayVector.get(2) * z;
-        double g = rayVector.get(0) * rayVector.get(0);
-        double h = rayVector.get(1) * rayVector.get(1);
-        double i = rayVector.get(2) * rayVector.get(2);
-        double f = a * a;
-        double l = x * x;
-        double m = y * y;
-        double n = z * z;
+        final double x = m_scratchVector.get(0);
+        final double y = m_scratchVector.get(1);
+//        final double z = m_scratchVector.get(2);
+        final double c = rayVector.get(0) * x;
+        final double d = rayVector.get(1) * y;
+//        final double e = rayVector.get(2) * z;
+        final double g = rayVector.get(0) * rayVector.get(0);
+        final double h = rayVector.get(1) * rayVector.get(1);
+//        final double i = rayVector.get(2) * rayVector.get(2);
+        final double f = a * a;
+        final double l = x * x;
+        final double m = y * y;
+//        final double n = z * z;
 
-        double temp2 = rayVector.dot(rayVector);
-        double temp3 = temp2 * temp2;
-        double temp4 = m_scratchVector.dot(m_scratchVector) + f - b;
-        double temp5 = m_scratchVector.dot(rayVector);
-        double temp6 = 4 * temp5;
+        final double temp2 = rayVector.dot(rayVector);
+        final double temp3 = temp2 * temp2;
+        final double temp4 = m_scratchVector.dot(m_scratchVector) + f - b;
+        final double temp5 = m_scratchVector.dot(rayVector);
+        final double temp6 = 4 * temp5;
 
         adC[0] = temp6 / temp2;
         adC[1] = 4 * ( temp5 * temp5 - f * ( g + h ) ) / temp3 + 2 * temp4 / temp2;
@@ -57,7 +57,7 @@ public class Torus extends Node {
         adC[3] = ( temp4 * temp4 - 4 * f * ( l + m ) ) / temp3;
 
         // Retrieve the smallest positive root of the quadratic.
-        double [] roots = PolyRoots.quarticRoots(adC[0], adC[1], adC[2], adC[3]);
+        final double [] roots = PolyRoots.quarticRoots(adC[0], adC[1], adC[2], adC[3]);
         double dRoot = Double.MAX_VALUE;
         for(int index = 0, ii = roots.length; index < ii; ++index) {
             if(roots[index] > Utils.EPSILON) {
@@ -75,22 +75,24 @@ public class Torus extends Node {
             m_scratchPoint.add(m_scratchVector);
             m_scratchVector.set(m_centre, m_scratchPoint);
 
-            g = b;
-            a = m_scratchVector.get(0);
-            b = m_scratchVector.get(1);
-            c = m_scratchVector.get(2);
-            d = m_scratchVector.dot(m_scratchVector) - f - g;
-            e = d + f + f;
-            result.getNormal().set(d * a, d * b, e * c);
+            final double g2 = b;
+            final double a2 = m_scratchVector.get(0);
+            final double b2 = m_scratchVector.get(1);
+            final double c2 = m_scratchVector.get(2);
+            final double d2 = m_scratchVector.dot(m_scratchVector) - f - g2;
+            final double e2 = d2 + f + f;
+            result.getNormal().set(d2 * a2, d2 * b2, e2 * c2);
             result.setMaterial(getMaterial());
+            return true;
         }
+        return false;
     }
 
     public Point getCentre() {
         return m_centre;
     }
 
-    public void setCentre(Point centre) {
+    public void setCentre(final Point centre) {
         m_centre = centre;
     }
 }

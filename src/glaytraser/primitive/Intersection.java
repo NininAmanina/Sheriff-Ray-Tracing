@@ -17,7 +17,7 @@ public class Intersection extends Node {
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
-    public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+    public boolean rayIntersect(final Result result, final Ray ray, final boolean calcNormal) {
         m_scratchResultA.init();
         m_nodeA.intersect(m_scratchResultA, ray, calcNormal);
         m_scratchResultB.init();
@@ -25,7 +25,7 @@ public class Intersection extends Node {
         double tA = m_scratchResultA.getT();
         double tB = m_scratchResultB.getT();
         if(tA == Double.MAX_VALUE || tB == Double.MAX_VALUE) {
-            return;
+            return false;
         } else if(tA < tB) {
             result.set(m_scratchResultB);
         } else {
@@ -34,5 +34,6 @@ public class Intersection extends Node {
         if(getMaterial() != null) {
             result.setMaterial(getMaterial());
         }
+        return true;
     }
 }

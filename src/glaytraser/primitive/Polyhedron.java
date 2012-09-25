@@ -67,13 +67,13 @@ public class Polyhedron extends Node {
 
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
-    public void rayIntersect(Result result, Ray ray, final boolean calcNormal) {
+    public boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         // Note that the Point at index 0 in a polygon acts as the equivalent of the Point at m_polygon.length.
         // SUGGESTION:  At certain points, use % m_polygon[i].length for indexing.
-        // TODO:  Transform the ray
+        boolean success = false;
         outer: for(int j = 0, jj = m_polygon.size(); j < jj; ++j) {
             Integer [] poly = m_polygon.get(j);
-            // TODO:  Get intersection point with each plane
+            // Get intersection point with each plane
             final Normal normal = m_normal.get(j);
             final Point p = ray.getPoint();
             final Vector v = ray.getVector();
@@ -104,8 +104,9 @@ public class Polyhedron extends Node {
                 result.setT(t);
                 result.getNormal().set(normal);
                 result.setMaterial(getMaterial());
+                success = true;
             }
-            // TODO:  Transform the normal
         }
+        return success;
     }
 }

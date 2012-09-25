@@ -13,23 +13,12 @@ public class Vector extends AbstractTriple {
     }
 
     /**
-     * Create a new Vector, initalised with x, y, and z components.
-     *
-     * @param x
-     * @param y
-     * @param z
-     */
-    public Vector(double x, double y, double z) {
-        super(x, y, z);
-    }
-
-    /**
      * Create a new Vector as the difference between two Points (p2 - p1).
      *
      * @param p1 The first Point
      * @param p2 The second Point
      */
-    public Vector(Point p1, Point p2) {
+    public Vector(final Point p1, final Point p2) {
         set(p1, p2);
     }
 
@@ -38,7 +27,7 @@ public class Vector extends AbstractTriple {
      *
      * @param v The Vector which is being copied
      */
-    public Vector(Vector v) {
+    public Vector(final Vector v) {
         super(v.value[0], v.value[1], v.value[2]);
     }
 
@@ -48,7 +37,7 @@ public class Vector extends AbstractTriple {
      * @param v The Vector which is being copied
      * @return A reference to this vector, for chaining purposes
      */
-    public Vector set(Vector v) {
+    public Vector set(final Vector v) {
         System.arraycopy(v.value, 0, value, 0, 4);
         return this;
     }
@@ -62,7 +51,7 @@ public class Vector extends AbstractTriple {
      * @return The calculated dot product
      * @throws IllegalArgumentException if this is not a Row but t is a Point
      */
-    public double dot(AbstractTriple t) {
+    public double dot(final AbstractTriple t) {
         if(t instanceof Point && !(this instanceof Row) && !(this instanceof Column)) {
             throw new IllegalArgumentException(
                 "Cannot take the dot product of a Point with anything but a Row or Column!");
@@ -89,7 +78,7 @@ public class Vector extends AbstractTriple {
      * @param p2 The second Point
      * @return A reference to this vector, for chaining purposes
      */
-    public Vector set(Point p1, Point p2) {
+    public Vector set(final Point p1, final Point p2) {
         return (Vector) set(p2.value[0] - p1.value[0],
                             p2.value[1] - p1.value[1],
                             p2.value[2] - p1.value[2]);
@@ -126,7 +115,7 @@ public class Vector extends AbstractTriple {
      * @param scalar is the multiplicative factor
      * @return A reference to this vector, for chaining purposes
      */
-    public Vector multiply(double scalar) {
+    public Vector multiply(final double scalar) {
         for(int i = 0; i < 3; ++i) {
             value[i] *= scalar;
         }
@@ -146,13 +135,11 @@ public class Vector extends AbstractTriple {
         }
 
         double length = Math.sqrt(sum);
-        if(Math.abs(length) < Utils.EPSILON) {
+        if(length < Utils.EPSILON) {
             throw new IllegalStateException("Cannot normalise a zero-length vector");
         }
-        if(length > 0) {
-            for(int i = 0; i < 3; ++i) {
-                value[i] /= length;
-            }
+        for(int i = 0; i < 3; ++i) {
+            value[i] /= length;
         }
 
         return length;
