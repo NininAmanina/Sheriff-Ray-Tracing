@@ -83,9 +83,8 @@ public class Node {
      * @param scaleFactor The amount to scale in x, y, and z.
      */
     public final void scale(final Point scalePoint, final Vector scaleFactor) {
-        // TODO:  use the scalePoint
-        // Firstly translate to the origin
-        m_scratchVector.set(m_txToNode.getColumn(3));
+        // Firstly translate to the scalePoint
+        ((Vector) m_scratchVector.set(scalePoint)).multiply(-1).add(m_txToNode.getColumn(3));
         translate(m_scratchVector);
         // To Node tx
         m_scratchMatrix.identity();
