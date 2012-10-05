@@ -129,10 +129,14 @@ public class LightManager {
      * @param m The Material
      * @return The colour of the pixel as an integer.
      */
-    public static void doLighting(RGBTriple pixel, Ray invertedRay, Result result, Node root, RGBTriple factor) {
+    public static void doLighting(final RGBTriple pixel,
+                                  final Ray invertedRay,
+                                  final Result result,
+                                  final Node root,
+                                  final RGBTriple factor) {
         m_pixel.set(0, 0, 0);
         // Loop through all the light sources, casting rays into the scene.
-        for(Light light : m_light) {
+        for(final Light light : m_light) {
             light.doLighting(m_pixel, invertedRay, result, root);
         }
 
@@ -140,10 +144,16 @@ public class LightManager {
         pixel.add(m_pixel);
     }
 
-    private static final void doLighting(RGBTriple pixel, Ray rayToLight, double distanceToLight, Ray invertedRay, Result result, Node root, RGBTriple colour) {
+    private static final void doLighting(final RGBTriple pixel,
+                                         final Ray rayToLight,
+                                         final double distanceToLight,
+                                         final Ray invertedRay,
+                                         final Result result,
+                                         final Node root,
+                                         final RGBTriple colour) {
         // If another object occludes this light source, then no need to do lighting calculations.
         m_scratchResult.init();
-        root.rayIntersect(m_scratchResult, rayToLight, false);
+        root.intersect(m_scratchResult, rayToLight, false);
         if(m_scratchResult.getT() < distanceToLight) {
             return;
         }
