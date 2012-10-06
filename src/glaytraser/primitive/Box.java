@@ -17,14 +17,14 @@ public class Box extends Polyhedron {
         ArrayList<Point> point = new ArrayList<Point>();
         // Define the vertices on the Box.
         final Vector scratchVector = new Vector();
-        point.add((Point) new Point(p).add((Vector) scratchVector.set(     0,      0,      0)));
-        point.add((Point) new Point(p).add((Vector) scratchVector.set(length,      0,      0)));
-        point.add((Point) new Point(p).add((Vector) scratchVector.set(     0, length,      0)));
-        point.add((Point) new Point(p).add((Vector) scratchVector.set(length, length,      0)));
-        point.add((Point) new Point(p).add((Vector) scratchVector.set(     0,      0, length)));
-        point.add((Point) new Point(p).add((Vector) scratchVector.set(length,      0, length)));
-        point.add((Point) new Point(p).add((Vector) scratchVector.set(     0, length, length)));
-        point.add((Point) new Point(p).add((Vector) scratchVector.set(length, length, length)));
+        point.add(new Point(p).add(scratchVector.set(     0,      0,      0)));
+        point.add(new Point(p).add(scratchVector.set(length,      0,      0)));
+        point.add(new Point(p).add(scratchVector.set(     0, length,      0)));
+        point.add(new Point(p).add(scratchVector.set(length, length,      0)));
+        point.add(new Point(p).add(scratchVector.set(     0,      0, length)));
+        point.add(new Point(p).add(scratchVector.set(length,      0, length)));
+        point.add(new Point(p).add(scratchVector.set(     0, length, length)));
+        point.add(new Point(p).add(scratchVector.set(length, length, length)));
 
         // Define the faces of the Box.
         ArrayList<Integer []> polygon = new ArrayList<Integer []>();

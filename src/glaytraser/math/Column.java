@@ -1,7 +1,5 @@
 package glaytraser.math;
 
-import glaytraser.math.AbstractTriple;
-
 public class Column extends Vector {
     public Column() {
     }
@@ -10,7 +8,7 @@ public class Column extends Vector {
         set(d1, d2, d3, d4);
     }
 
-    public AbstractTriple set(int i, double d) {
+    public Column set(int i, double d) {
         if(i < 0 || i > 3) {
             throw new IllegalArgumentException("index " + i + "is out of bounds");
         }

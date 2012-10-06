@@ -103,7 +103,7 @@ public abstract class AbstractQuadric extends Node {
                 m_scratchPoint.set(ray.getPoint()).add(
                         m_scratchVector.set(ray.getVector()).multiply(t));
                 computeQuadricNormal(result.getNormal(), m_scratchVector.set(m_centre, m_scratchPoint));
-                Normal n = (Normal) new Normal().set(m_centre, m_scratchPoint);
+                Normal n = new Normal().set(m_centre, m_scratchPoint);
 
                 // Set the material property for the primitive
                 result.setMaterial(getMaterial());

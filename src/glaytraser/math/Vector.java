@@ -5,7 +5,8 @@ package glaytraser.math;
  * @author G & S
  *
  */
-public class Vector extends AbstractTriple {
+public class Vector extends AbstractTriple<Vector> {
+
     /**
      * Create a null Vector.
      */
@@ -37,7 +38,7 @@ public class Vector extends AbstractTriple {
      * @param v The Vector which is being copied
      * @return A reference to this vector, for chaining purposes
      */
-    public Vector set(final Vector v) {
+    public <U extends Vector> Vector set(final U v) {
         System.arraycopy(v.value, 0, value, 0, 4);
         return this;
     }
@@ -78,10 +79,10 @@ public class Vector extends AbstractTriple {
      * @param p2 The second Point
      * @return A reference to this vector, for chaining purposes
      */
-    public Vector set(final Point p1, final Point p2) {
-        return (Vector) set(p2.value[0] - p1.value[0],
-                            p2.value[1] - p1.value[1],
-                            p2.value[2] - p1.value[2]);
+    public <T extends Vector> T set(final Point p1, final Point p2) {
+        return (T) set(p2.value[0] - p1.value[0],
+                       p2.value[1] - p1.value[1],
+                       p2.value[2] - p1.value[2]);
     }
 
     /**
@@ -115,11 +116,11 @@ public class Vector extends AbstractTriple {
      * @param scalar is the multiplicative factor
      * @return A reference to this vector, for chaining purposes
      */
-    public Vector multiply(final double scalar) {
+    public <T extends Vector> T multiply(final double scalar) {
         for(int i = 0; i < 3; ++i) {
             value[i] *= scalar;
         }
-        return this;
+        return (T) this;
     }
 
     /**

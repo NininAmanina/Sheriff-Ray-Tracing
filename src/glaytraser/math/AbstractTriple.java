@@ -3,7 +3,7 @@ package glaytraser.math;
 /**
  * This class is the superclass of all triples which we wish to use:  Points, Vectors, and Rows in a Matrix
  */
-public abstract class AbstractTriple {
+public abstract class AbstractTriple<T> {
     // The data for the triple
     /*package*/ final double [] value = new double [4];
 
@@ -47,49 +47,50 @@ public abstract class AbstractTriple {
      * @param d The value
      * @return A reference to this vector, for chaining purposes
      */
-    public AbstractTriple set(final int i, final double d) {
+    public T set(final int i, final double d) {
         if(i < 0 || i > 2) {
             throw new IllegalArgumentException("index " + i + "is out of bounds");
         }
         value[i] = d;
-        return this;
+        return (T) this;
     }
 
     // Note that this is not type-safe -- we can initialise a Point with the XYZ values of
     // a vector, et al.
-    public AbstractTriple set(final AbstractTriple t) {
-        return set(t.value[0], t.value[1], t.value[2]);
+    public <U extends AbstractTriple> T set(final U t) {
+        return (T) set(t.value[0], t.value[1], t.value[2]);
     }
 
     public double get(final int index) {
         return value[index];
     }
 
-    public AbstractTriple set(final double d0, final double d1, final double d2) {
+    public T set(final double d0, final double d1, final double d2) {
         value[0] = d0;
         value[1] = d1;
         value[2] = d2;
-        return this;
+        return (T) this;
     }
 
-    public AbstractTriple subtract(final Vector v) {
+    public <T extends AbstractTriple> T subtract(final Vector v) {
         for(int i = 0; i < 3; ++i) {
             value[i] -= v.value[i];
         }
-        return this;
+        return (T) this;
     }
     
-    public AbstractTriple add(final Vector v) {
+    public T add(final Vector v) {
         for(int i = 0; i < 3; ++i) {
             value[i] += v.value[i];
         }
-        return this;
+        return (T) this;
     }
 
-    public void clear() {
+    public <T extends AbstractTriple> T clear() {
         for(int i = 0; i < 3; ++i) {
             value[i] = 0.0;
         }
+        return (T) this;
     }
 
     public String toString() {

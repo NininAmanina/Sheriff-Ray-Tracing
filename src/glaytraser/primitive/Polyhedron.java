@@ -58,8 +58,8 @@ public class Polyhedron extends Node {
         m_normal = new ArrayList<Normal>();
         // TODO:  For now, assume that no sequence of three points is collinear.
         for(Integer [] polygon : m_polygon) {
-            Normal n = (Normal) m_scratchVector1.set(m_point[polygon[0]], m_point[polygon[1]]).crossProduct(
-                                m_scratchVector2.set(m_point[polygon[1]], m_point[polygon[2]]));
+            Normal n = m_scratchVector1.set(m_point[polygon[0]], m_point[polygon[1]]).crossProduct(
+                       m_scratchVector2.set(m_point[polygon[1]], m_point[polygon[2]]));
             n.normalize();
             m_normal.add(n);
         }

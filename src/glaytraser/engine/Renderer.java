@@ -29,30 +29,29 @@ public class Renderer {
 
     static int [] renderScene(Node root, BufferedImage image) {
         // The main renderer logic
-        Result result = new Result();
-        Ray ray = new Ray();
-        Camera camera = Camera.getCamera();
+        final Result result = new Result();
+        final Ray ray = new Ray();
+        final Camera camera = Camera.getCamera();
         final Point cameraPoint = camera.getPoint();
         // Make these unit vectors
         final Vector cameraUp = camera.getUp();
-        Vector verticalVector = new Vector(cameraUp).multiply(-1);
-        Vector horizontalVector = cameraUp.crossProduct(camera.getDirection()).multiply(-1.0);
+        final Vector verticalVector = new Vector(cameraUp).multiply(-1);
+        final Vector horizontalVector = cameraUp.crossProduct(camera.getDirection()).multiply(-1.0);
 
-        int width = camera.getWidth();
-        int height = camera.getHeight();
-        double halfWidth = (double) (width >> 1);
-        double halfHeight = (double) (height >> 1);
-        double distanceToPixelGrid = halfWidth / Math.tan(camera.getFov());
+        final int width = camera.getWidth();
+        final int height = camera.getHeight();
+        final double halfWidth = (double) (width >> 1);
+        final double halfHeight = (double) (height >> 1);
+        final double distanceToPixelGrid = halfWidth / Math.tan(camera.getFov());
 
         Vector temp = new Vector(camera.getDirection()).multiply(distanceToPixelGrid);
 
         // Find the top-left pixel's centre (move halfwidth - 0.5 pixels to the left,
         // and halfHeight = 0.5 pixels up from the centre of the pixel grid
-        // TODO: Use generics to avoid the cast below
-        Point scanlineStart = (Point) new Point(cameraPoint)
-            .add(temp)
-            .add(temp.set(horizontalVector).multiply(-(halfWidth - 0.5)))
-            .add(temp.set(cameraUp).multiply(halfHeight - 0.5));
+        final Point scanlineStart = new Point(cameraPoint)
+                                        .add(temp)
+                                        .add(temp.set(horizontalVector).multiply(-(halfWidth - 0.5)))
+                                        .add(temp.set(cameraUp).multiply(halfHeight - 0.5));
         Point scanlinePoint = new Point();
 
         int [] pixel = new int [width * height];
@@ -102,9 +101,8 @@ public class Renderer {
                 }
             }
             // Lighting calculations
-            Point intersectionPt = (Point) m_scratchPoint.set(ray.getPoint())
-                                                         .add(m_scratchVector.set(ray.getVector())
-                                                                             .multiply(result.getT()));
+            Point intersectionPt = m_scratchPoint.set(ray.getPoint()).add(m_scratchVector.set(ray.getVector())
+                                                                     .multiply(result.getT()));
 
             // Invert the ray to form the ray from intersection point to the eye
             m_scratchRay.getPoint().set(intersectionPt);

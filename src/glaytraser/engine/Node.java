@@ -21,16 +21,7 @@ public class Node {
     protected boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
         /*
         Each subclass of Node must have something like the following code within it --
-        the t value, the material properties and the normal must be set at the same time.
-        We recommend calculating the normal at any time an intersection is detected.
-        We recommend transformimg the normal
-
-        double t = 
-        if(t > EPSILON && t < result.getT()) {
-            result.setT(t)
-            result.setNormal(transformedCalculatedNormal);
-            result.setMaterial(m_material);
-        }
+        the t value, the material properties and the (untransformed) normal must be set at the same time.
         */
         return false;
     }
@@ -84,7 +75,7 @@ public class Node {
      */
     public final void scale(final Point scalePoint, final Vector scaleFactor) {
         // Firstly translate to the scalePoint
-        ((Vector) m_scratchVector.set(scalePoint)).multiply(-1).add(m_txToNode.getColumn(3));
+        (m_scratchVector.set(scalePoint)).multiply(-1).add(m_txToNode.getColumn(3));
         translate(m_scratchVector);
         // To Node tx
         m_scratchMatrix.identity();

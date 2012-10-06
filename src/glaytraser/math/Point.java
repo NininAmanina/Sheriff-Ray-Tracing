@@ -6,7 +6,7 @@ package glaytraser.math;
  *
  * Defines a Point, as used in graphics packages.
  */
-public class Point extends AbstractTriple {
+public class Point extends AbstractTriple<Point> {
     public Point() {
         value[3] = 1.0;
     }
