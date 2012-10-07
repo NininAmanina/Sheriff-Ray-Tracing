@@ -10,9 +10,6 @@ public class LightManager {
     // A collection of light sources defined for the scene.
     private static final ArrayList<Light> m_light = new ArrayList<Light>();
     private static final RGBTriple m_pixel = new RGBTriple();
-    private static final Result m_scratchResult = new Result();
-    private static final Vector m_scratchVector = new Vector();
-    private static final RGBTriple m_scratchRGB = new RGBTriple();
 
     /**
      * This class represents a light object and its properties.
@@ -20,10 +17,6 @@ public class LightManager {
     static abstract class Light {
         // Properties of the light source
         RGBTriple m_colour;
-
-        // Scratch colour for calculations
-        Vector m_scratchVector = new Vector();
-        RGBTriple m_scratchRGB = new RGBTriple();
 
         abstract public void doLighting(RGBTriple pixel, Ray invertedRay, Result result, Node root);
 
@@ -40,13 +33,15 @@ public class LightManager {
      * This class represents an ambient light object and its properties.
      */
     static class AmbientLight extends Light {
-        private AmbientLight(RGBTriple colour) {
+        private AmbientLight(final RGBTriple colour) {
             super(colour);
         }
 
         @Override
-        public void doLighting(RGBTriple pixel, Ray invertedRay, Result result, Node root) {
-            pixel.add(((RGBTriple) m_scratchRGB.set(m_colour)).multiply(result.getMaterial().getDiffuse()));
+        public void doLighting(final RGBTriple pixel, final Ray invertedRay, final Result result, final Node root) {
+            final RGBTriple rgb  = RGBTriple.getRGBTriple();
+            pixel.add(((RGBTriple) rgb.set(m_colour)).multiply(result.getMaterial().getDiffuse()));
+            RGBTriple.putRGBTriple(rgb);
         }
     }
 
@@ -54,7 +49,6 @@ public class LightManager {
      * This class represents an ambient light object and its properties.
      */
     static class DirectionalLight extends Light {
-        private final Ray m_scratchRay = new Ray();
         private Vector m_direction;
 
         /**
@@ -63,18 +57,19 @@ public class LightManager {
          * @param colour The RGB values of the light
          * @param direction The direction into which the light is travelling
          */
-        private DirectionalLight(Vector direction, RGBTriple colour) {
+        private DirectionalLight(final Vector direction, final RGBTriple colour) {
             super(colour);
             m_direction = direction;
         }
 
         @Override
-        public void doLighting(RGBTriple pixel, Ray invertedRay, Result result, Node root) {
+        public void doLighting(final RGBTriple pixel, final Ray invertedRay, final Result result, final Node root) {
             // A ray from the intersection point to the light source
-            Ray rayToLight = m_scratchRay;
+            final Ray rayToLight = Ray.getRay();
             rayToLight.getVector().set(m_direction);
             rayToLight.getPoint().set(invertedRay.getPoint());
             LightManager.doLighting(pixel, rayToLight, Double.MAX_VALUE, invertedRay, result, root, m_colour);
+            Ray.putRay(rayToLight);
         }
     }
 
@@ -84,7 +79,6 @@ public class LightManager {
     static class PointLight extends Light {
         // The position of the light source
         private Point m_position;
-        private final Ray m_scratchRay = new Ray();
         private int m_attenuation;
 
         /**
@@ -93,7 +87,7 @@ public class LightManager {
          * @param colour The colour of the light.
          * @param attenuation The attenuation exponent.  It must be 0, 1, or 2.
          */
-        private PointLight(Point p, RGBTriple colour, int attenuation) {
+        private PointLight(final Point p, final RGBTriple colour, final int attenuation) {
             super(colour);
             m_position = p;
             if(attenuation < 0 || attenuation > 2) {
@@ -112,13 +106,14 @@ public class LightManager {
         }
 
         @Override
-        public void doLighting(RGBTriple pixel, Ray invertedRay, Result result, Node root) {
+        public void doLighting(final RGBTriple pixel, final Ray invertedRay, final Result result, final Node root) {
             // A ray from the intersection point to the light source
-            Ray rayToLight = m_scratchRay;
+            final Ray rayToLight = Ray.getRay();
             final double distanceToLight = rayToLight.getVector().set(invertedRay.getPoint(), m_position).normalize();
             rayToLight.getPoint().set(invertedRay.getPoint());
             LightManager.doLighting(pixel, rayToLight, distanceToLight, invertedRay, result, root, m_colour);
-        }
+            Ray.putRay(rayToLight);
+       }
     }
 
     /**
@@ -152,27 +147,32 @@ public class LightManager {
                                          final Node root,
                                          final RGBTriple colour) {
         // If another object occludes this light source, then no need to do lighting calculations.
-        m_scratchResult.init();
-        root.intersect(m_scratchResult, rayToLight, false);
-        if(m_scratchResult.getT() < distanceToLight) {
+        final Result lightResult = Result.getResult();
+        lightResult.init();
+        root.intersect(lightResult, rayToLight, false);
+        if(lightResult.getT() < distanceToLight) {
             return;
         }
+        Result.putResult(lightResult);
 
         final Material material = result.getMaterial();
         double N_dot_L = result.getNormal().dot(rayToLight.getVector());
 
+        final Vector v = Vector.getVector();
         // Reflected light vector due to a specular surface.
-        m_scratchVector.set(result.getNormal()).multiply(N_dot_L).multiply(2);
-        m_scratchVector.subtract(rayToLight.getVector());
+        v.set(result.getNormal()).multiply(N_dot_L).multiply(2);
+        v.subtract(rayToLight.getVector());
 
         // Vector from the intersection point to the eye (camera) position.
-        double R_dot_V = Math.max(0, m_scratchVector.dot(invertedRay.getVector()));
-        double phongSpecularTerm = Math.pow(R_dot_V, material.getPhong());
+        final double R_dot_V = Math.max(0, v.dot(invertedRay.getVector()));
+        final double phongSpecularTerm = Math.pow(R_dot_V, material.getPhong());
+        Vector.putVector(v);
 
         // Uses Phong shading for materials with a specular property.
-        pixel.add(((RGBTriple) m_scratchRGB.set(colour)).multiply(material.getSpecular()).multiply(phongSpecularTerm));
-        pixel.add(((RGBTriple) m_scratchRGB.set(colour)).multiply(material.getDiffuse()).multiply(Math.max(0, N_dot_L)));
-
+        final RGBTriple rgb = RGBTriple.getRGBTriple();
+        pixel.add(rgb.set(colour).multiply(material.getSpecular()).multiply(phongSpecularTerm));
+        pixel.add(rgb.set(colour).multiply(material.getDiffuse()).multiply(Math.max(0, N_dot_L)));
+        RGBTriple.putRGBTriple(rgb);
     }
 
     public static void addPointLightSource(final Point p, final RGBTriple colour, final int attenuation) {

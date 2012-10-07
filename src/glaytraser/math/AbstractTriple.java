@@ -1,5 +1,7 @@
 package glaytraser.math;
 
+import java.util.ArrayList;
+
 /**
  * This class is the superclass of all triples which we wish to use:  Points, Vectors, and Rows in a Matrix
  */
@@ -65,11 +67,11 @@ public abstract class AbstractTriple<T> {
         return value[index];
     }
 
-    public T set(final double d0, final double d1, final double d2) {
+    public <U extends T> U set(final double d0, final double d1, final double d2) {
         value[0] = d0;
         value[1] = d1;
         value[2] = d2;
-        return (T) this;
+        return (U) this;
     }
 
     public <T extends AbstractTriple> T subtract(final Vector v) {

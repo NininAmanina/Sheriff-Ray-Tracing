@@ -1,9 +1,30 @@
 package glaytraser.math;
 
+import java.util.ArrayList;
+
 /**
  * This class represents color expressed in RGB coordinates.
  */
-public class RGBTriple extends AbstractTriple {
+public class RGBTriple extends AbstractTriple <RGBTriple> {
+    private static final ArrayList<RGBTriple> m_scratchRGBTripleList = new ArrayList<RGBTriple>();
+
+    public static final RGBTriple getRGBTriple() {
+        synchronized(m_scratchRGBTripleList) {
+            final int size = m_scratchRGBTripleList.size();
+            if(size > 0) {
+                return m_scratchRGBTripleList.remove(size - 1).set(0, 0, 0);
+            } else {
+                return new RGBTriple();
+            }
+        }
+    }
+
+    public static final void putRGBTriple(final RGBTriple rgb) {
+        synchronized(m_scratchRGBTripleList) {
+            m_scratchRGBTripleList.add(rgb);
+        }
+    }
+
     /**
      * Constructor for RGBTriple
      */

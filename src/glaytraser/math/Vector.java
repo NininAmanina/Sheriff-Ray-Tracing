@@ -1,11 +1,15 @@
 package glaytraser.math;
 
+import java.util.ArrayList;
+
 /**
  * 
  * @author G & S
  *
  */
 public class Vector extends AbstractTriple<Vector> {
+
+    private static final ArrayList<Vector> m_scratchVectorList = new ArrayList<Vector>();
 
     /**
      * Create a null Vector.
@@ -32,6 +36,23 @@ public class Vector extends AbstractTriple<Vector> {
         super(v.value[0], v.value[1], v.value[2]);
     }
 
+    public static final Vector getVector() {
+        synchronized(m_scratchVectorList) {
+            final int size = m_scratchVectorList.size();
+            if(size > 0) {
+                return m_scratchVectorList.remove(size - 1).set(0, 0, 0);
+            } else {
+                return new Vector();
+            }
+        }
+    }
+
+    public static final void putVector(final Vector v) {
+        synchronized(m_scratchVectorList) {
+            m_scratchVectorList.add(v);
+        }
+    }
+
     /**
      * Initilaise this Vector using another as a template.
      *
@@ -52,7 +73,7 @@ public class Vector extends AbstractTriple<Vector> {
      * @return The calculated dot product
      * @throws IllegalArgumentException if this is not a Row but t is a Point
      */
-    public double dot(final AbstractTriple t) {
+    public double dot(final AbstractTriple<?> t) {
         if(t instanceof Point && !(this instanceof Row) && !(this instanceof Column)) {
             throw new IllegalArgumentException(
                 "Cannot take the dot product of a Point with anything but a Row or Column!");
@@ -92,8 +113,7 @@ public class Vector extends AbstractTriple<Vector> {
      * @return The cross product, as a Normal
      */
     public Normal crossProduct(final Vector v1) {
-        final Normal normal = new Normal();
-        return crossProduct(v1, normal);
+        return crossProduct(v1, Normal.getNormal());
     }
 
     /**
@@ -104,10 +124,9 @@ public class Vector extends AbstractTriple<Vector> {
      * @return <code>normal</code>
      */
     public Normal crossProduct(final Vector v1, final Normal normal) {
-        normal.set(value[1] * v1.value[2] - value[2] * v1.value[1], 
-                   value[2] * v1.value[0] - value[0] * v1.value[2],
-                   value[0] * v1.value[1] - value[1] * v1.value[0]);
-        return normal;
+        return Normal.getNormal().set(value[1] * v1.value[2] - value[2] * v1.value[1],
+                                      value[2] * v1.value[0] - value[0] * v1.value[2],
+                                      value[0] * v1.value[1] - value[1] * v1.value[0]);
     }
 
     /**

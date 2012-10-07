@@ -7,8 +7,6 @@ import glaytraser.math.*;
 public class Node {
     // M^-1, which is also M^T
     private final Matrix m_txToNode = new Matrix();
-    private final Vector m_scratchVector = new Vector();
-    private final Matrix m_scratchMatrix = new Matrix();
     private final Ray m_txRay = new Ray();
     private final ArrayList<Node> m_child = new ArrayList<Node>();
     private Material m_material;
@@ -60,11 +58,12 @@ public class Node {
      */
     public final void translate(final Vector translate) {
         // To Node tx
-        m_scratchMatrix.identity();
+        final Matrix mat = Matrix.getMatrix();
         for(int i = 0; i < 3; ++i) {
-            m_scratchMatrix.set(i, 3, -translate.get(i));
+            mat.set(i, 3, -translate.get(i));
         }
-        m_txToNode.postMultiply(m_scratchMatrix);
+        m_txToNode.postMultiply(mat);
+        Matrix.putMatrix(mat);
     }
 
     /**
@@ -74,17 +73,21 @@ public class Node {
      * @param scaleFactor The amount to scale in x, y, and z.
      */
     public final void scale(final Point scalePoint, final Vector scaleFactor) {
+        final Vector v1 = Vector.getVector();
         // Firstly translate to the scalePoint
-        (m_scratchVector.set(scalePoint)).multiply(-1).add(m_txToNode.getColumn(3));
-        translate(m_scratchVector);
+        v1.set(scalePoint).multiply(-1).add(m_txToNode.getColumn(3));
+        translate(v1);
         // To Node tx
-        m_scratchMatrix.identity();
+        final Matrix mat = Matrix.getMatrix();
+        mat.identity();
         for(int i = 0; i < 3; ++i) {
-            m_scratchMatrix.set(i, i, 1.0 / scaleFactor.get(i));
+            mat.set(i, i, 1.0 / scaleFactor.get(i));
         }
-        m_txToNode.postMultiply(m_scratchMatrix);
+        m_txToNode.postMultiply(mat);
+        Matrix.putMatrix(mat);
         // Translate back
-        translate(m_scratchVector.multiply(-1));
+        translate(v1.multiply(-1));
+        Vector.putVector(v1);
     }
 
     /**
@@ -95,21 +98,25 @@ public class Node {
      */
     public final void rotate(final int axis, final double angle) {
         // Firstly translate to the origin
-        m_scratchVector.set(m_txToNode.getColumn(3));
-        translate(m_scratchVector);
-        m_scratchMatrix.identity();
+        final Vector v1 = Vector.getVector();
+        v1.set(m_txToNode.getColumn(3));
+        translate(v1);
+        final Matrix mat = Matrix.getMatrix();
+        mat.identity();
         final int axisP = (axis + 1) % 3;
         final int axisPP = (axis + 2) % 3;
         final double cos = Math.cos(angle);
         final double sin = Math.sin(angle);
         // To Node tx
-        m_scratchMatrix.set(axisP, axisP, cos);
-        m_scratchMatrix.set(axisP, axisPP, sin);
-        m_scratchMatrix.set(axisPP, axisP, -sin);
-        m_scratchMatrix.set(axisPP, axisPP, cos);
-        m_txToNode.postMultiply(m_scratchMatrix);
+        mat.set(axisP, axisP, cos);
+        mat.set(axisP, axisPP, sin);
+        mat.set(axisPP, axisP, -sin);
+        mat.set(axisPP, axisPP, cos);
+        m_txToNode.postMultiply(mat);
+        Matrix.putMatrix(mat);
         // Translate back
-        translate(m_scratchVector.multiply(-1));
+        translate(v1.multiply(-1));
+        Vector.putVector(v1);
     }
 
     public void addChild(final Node node) {

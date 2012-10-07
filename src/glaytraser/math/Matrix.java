@@ -1,5 +1,7 @@
 package glaytraser.math;
 
+import java.util.ArrayList;
+
 /**
  * 
  * @author G & S
@@ -7,9 +9,26 @@ package glaytraser.math;
  * This class represents a matrix for premultiplying vectors and points and post-multiplying Normals.
  */
 public final class Matrix {
-    private final Row m_scratchRow = new Row();
     private final Row [] m_row = new Row [4];
     private final Column [] m_column = new Column [4];
+    private static final ArrayList<Matrix> m_scratchMatrixList = new ArrayList<Matrix>();
+
+    public static final Matrix getMatrix() {
+        synchronized(m_scratchMatrixList) {
+            final int size = m_scratchMatrixList.size();
+            if(size > 0) {
+                return m_scratchMatrixList.remove(size - 1).identity();
+            } else {
+                return new Matrix();
+            }
+        }
+    }
+
+    public static final void putMatrix(final Matrix matrix) {
+        synchronized(m_scratchMatrixList) {
+            m_scratchMatrixList.add(matrix);
+        }
+    }
 
     public Matrix() {
         m_row[0] = new Row(); 
@@ -41,7 +60,7 @@ public final class Matrix {
         m_column[column].set(row, value);
     }
 
-    public void identity() {
+    public Matrix identity() {
         m_row[0].set(1, 0, 0, 0);
         m_row[1].set(0, 1, 0, 0);
         m_row[2].set(0, 0, 1, 0);
@@ -50,28 +69,39 @@ public final class Matrix {
         m_column[1].set(0, 1, 0, 0);
         m_column[2].set(0, 0, 1, 0);
         m_column[3].set(0, 0, 0, 1);
+        return this;
     }
 
     public void postMultiply(final Matrix m) {
-        for(int r = 0; r < 4; ++r) {
-            final Row row = m_row[r];
-            for(int c = 0; c < 4; ++c) {
-                m_scratchRow.set(c, row.dot(m.getColumn(c)));
+        final Row scratchRow = Row.getRow();
+        try {
+            for(int r = 0; r < 4; ++r) {
+                final Row row = m_row[r];
+                for(int c = 0; c < 4; ++c) {
+                    scratchRow.set(c, row.dot(m.getColumn(c)));
+                }
+                row.set(scratchRow);
             }
-            row.set(m_scratchRow);
+            copyRowsIntoColumns();
+        } finally {
+            Row.putRow(scratchRow);
         }
-        copyRowsIntoColumns();
     }
 
     public void preMultiply(final Matrix m) {
-        for(int r = 0; r < 4; ++r) {
-            final Row row = m.getRow(r);
-            for(int c = 0; c < 4; ++c) {
-                m_scratchRow.set(c, row.dot(m_column[c]));
+        final Row scratchRow = Row.getRow();
+        try {
+            for(int r = 0; r < 4; ++r) {
+                final Row row = m.getRow(r);
+                for(int c = 0; c < 4; ++c) {
+                    scratchRow.set(c, row.dot(m_column[c]));
+                }
+                m_row[r].set(scratchRow);
             }
-            m_row[r].set(m_scratchRow);
+            copyRowsIntoColumns();
+        } finally {
+            Row.putRow(scratchRow);
         }
-        copyRowsIntoColumns();
     }
 
     private void copyRowsIntoColumns() {

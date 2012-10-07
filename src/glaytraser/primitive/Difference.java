@@ -7,8 +7,6 @@ import glaytraser.engine.Result;
 public class Difference extends Node {
     private Node m_nodeA;
     private Node m_nodeB;
-    private Result m_scratchResultA = new Result();
-    private Result m_scratchResultB = new Result();
 
     /**
      * Subtract <code>nodeB,/code> from <code>nodeA</code>
@@ -23,23 +21,28 @@ public class Difference extends Node {
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
     public boolean rayIntersect(Result result, Ray ray, final boolean calcNormal) {
-        m_scratchResultA.init();
-        m_nodeA.intersect(m_scratchResultA, ray, calcNormal);
-        m_scratchResultB.init();
-        m_nodeB.intersect(m_scratchResultB, ray, calcNormal);
-        double tA = m_scratchResultA.getT();
-        double tB = m_scratchResultB.getT();
-        if(tA == Double.MAX_VALUE) {
-            return false;
-        } else if(tA < tB) {
-            result.set(m_scratchResultA);
-        } else {
-            result.set(m_scratchResultB);
-            result.setMaterial(m_scratchResultA.getMaterial());
+        final Result r1 = Result.getResult();
+        final Result r2 = Result.getResult();
+        try {
+            m_nodeA.intersect(r1, ray, calcNormal);
+            m_nodeB.intersect(r2, ray, calcNormal);
+            double tA = r1.getT();
+            double tB = r2.getT();
+            if(tA == Double.MAX_VALUE) {
+                return false;
+            } else if(tA < tB) {
+                result.set(r1);
+            } else {
+                result.set(r2);
+                result.setMaterial(r1.getMaterial());
+            }
+            if(getMaterial() != null) {
+                result.setMaterial(getMaterial());
+            }
+            return true;
+        } finally {
+            Result.putResult(r1);
+            Result.putResult(r2);
         }
-        if(getMaterial() != null) {
-            result.setMaterial(getMaterial());
-        }
-        return true;
     }
 }
