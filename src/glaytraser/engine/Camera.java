@@ -11,7 +11,6 @@ import glaytraser.math.Point;
 import glaytraser.math.Vector;
 
 public class Camera {
-    private static boolean m_initialised;
     private Pair m_size;
     private Point m_cameraPoint;
     private Vector m_cameraDirection;
@@ -40,9 +39,6 @@ public class Camera {
                        final String file,
                        final double fov) {
         synchronized(m_camera) {
-            if(m_initialised) {
-                throw new IllegalStateException("Camera already initialised");
-            }
             if(size == null) {
                 throw new IllegalArgumentException("The image's width and height must not be null");
             }
@@ -74,7 +70,6 @@ public class Camera {
             m_camera.setDirection(cameraDirection);
             m_camera.setFile(file);
             m_camera.setFov(Math.toRadians(0.5 * fov));
-            m_initialised = true;
 
             return m_camera;
         }

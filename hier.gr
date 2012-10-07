@@ -7,8 +7,8 @@ material blue { 0.7 0.6 1 } { 0.5 0.4 0.8 }  25
 
 
 transform : scene
-#translate :scene { 6 -2 -15 }
-#rotate :scene y -23
+translate :scene { 6 -2 -15 }
+rotate :scene y -23
 rotate :scene x 23
 
 
@@ -31,8 +31,8 @@ surfaceproperty :scene:arc:s gold
 translate :scene:arc:s { 0 4 0 }
 scale    :scene:arc:s { 0 0 0 } { 4 0.6 0.6 }
 
-#translate :scene:arc { -10 0 20 }
-#translate :scene:arc { 0 0 0 }
+translate :scene:arc { -10 0 20 }
+translate :scene:arc { 0 0 0 }
 
 
 # the floor
@@ -92,5 +92,5 @@ point_light { 200 200 400 } { 0.8 0.8 0.8 }  none
 point_light { 0 5 -20 } { 0.4 0.4 0.8 }  none
 ambient_light { 0.4 0.4 0.4 }
 
-render :scene size { 200 200 } eyepoint { 0 2 30 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 }  file hier.ppm
+render :scene size { 600 600 } eyepoint { 0 2 30 } fov 50 viewdirection { 0 0 -1 } updirection { 0 1 0 }  file hier.ppm
 exit
