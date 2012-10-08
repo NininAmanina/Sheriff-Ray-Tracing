@@ -43,4 +43,15 @@ public final class Row extends Vector {
         value[2] = d2;
         value[3] = d3;
     }
+
+    /**
+     * Initialise this Row using another Vector as a template.
+     *
+     * @param v The Vector which is being copied
+     * @return A reference to this Row, for chaining purposes
+     */
+    public Row set(final Row r) {
+        System.arraycopy(r.value, 0, value, 0, 4);
+        return this;
+    }
 }

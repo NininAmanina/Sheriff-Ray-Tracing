@@ -43,7 +43,7 @@ public final class Matrix {
         identity();
     }
 
-    public Row getRow(final int i) {
+    /*package*/ Row getRow(final int i) {
         return m_row[i];
     }
 

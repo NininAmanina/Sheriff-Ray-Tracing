@@ -54,17 +54,6 @@ public class Vector extends AbstractTriple<Vector> {
     }
 
     /**
-     * Initilaise this Vector using another as a template.
-     *
-     * @param v The Vector which is being copied
-     * @return A reference to this vector, for chaining purposes
-     */
-    public <U extends Vector> Vector set(final U v) {
-        System.arraycopy(v.value, 0, value, 0, 4);
-        return this;
-    }
-
-    /**
      * Return the dot product of this vector with an AbstractTriple.
      *
      * This may be done only between two Vectors or a Row and a Point.

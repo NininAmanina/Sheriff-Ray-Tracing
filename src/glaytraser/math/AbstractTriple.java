@@ -1,7 +1,5 @@
 package glaytraser.math;
 
-import java.util.ArrayList;
-
 /**
  * This class is the superclass of all triples which we wish to use:  Points, Vectors, and Rows in a Matrix
  */
