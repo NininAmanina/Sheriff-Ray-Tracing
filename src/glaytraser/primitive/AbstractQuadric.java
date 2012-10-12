@@ -67,6 +67,8 @@ public abstract class AbstractQuadric extends Node {
          */
         final Vector vec = Vector.getVector();
         final Point pt = Point.getPoint();
+        final Result newResult = Result.getResult();
+        newResult.setMaterial(getMaterial());
         try {
             vec.set(m_centre, ray.getPoint());
             final double pc_x = vec.get(0);
@@ -83,33 +85,26 @@ public abstract class AbstractQuadric extends Node {
             final double c = m_A * pc_x * pc_x + m_B * pc_x * pc_y + m_C * pc_x * pc_z + m_D * pc_y * pc_y + m_E * pc_y * pc_z +
                              m_F * pc_z * pc_z + m_G * pc_x + m_H * pc_y + m_I * pc_z + m_J;
             final double [] tArray = Utils.quadraticRoot(a, b, c);
-            if(tArray == null) {
+            if(tArray == null || tArray.length == 0) {
                 return false;
             }
 
-            double t;
-            if(tArray[0] < Utils.EPSILON) {
-                t = tArray[1];
-            } else if(tArray[1] < Utils.EPSILON) {
-                t = tArray[0];
-            } else {
-                t = Math.min(tArray[0], tArray[1]);
-            }
-            if(t > Utils.EPSILON && t < result.getT()) {
-                result.setT(t);
-                if(calcNormal) {
+            for(int i = 0, ii = tArray.length; i < ii; ++i) {
+                if(tArray[i] > Utils.EPSILON) {
                     pt.set(ray.getPoint()).add(
-                            vec.set(ray.getVector()).multiply(t));
-                    computeQuadricNormal(result.getNormal(), vec.set(m_centre, pt));
-
-                    // Set the material property for the primitive
-                    result.setMaterial(getMaterial());
+                            vec.set(ray.getVector()).multiply(tArray[i]));
+                    newResult.addIntersection(tArray[i], computeQuadricNormal(vec.set(m_centre, pt)));
                 }
             }
+            if(newResult.getT() < result.getT()) {
+                // Set the material property for the primitive
+                result.set(newResult);
+            }
             return true;
-        }  finally {
+        } finally {
             Vector.putVector(vec);
             Point.putPoint(pt);
+            Result.putResult(newResult);
         }
     }
 
@@ -117,13 +112,13 @@ public abstract class AbstractQuadric extends Node {
      * Compute the normal to Ax^2 + Bxy + Cxz + Dy^2 + Eyz + Fz^2 + Gx + Hy + Iz + J = 0
      * at v (a hack 'til translations are checked-in).
      */
-    public final void computeQuadricNormal(final Normal n, final Vector v) {
+    public final Normal computeQuadricNormal(final Vector v) {
         final double x = v.get(0);
         final double y = v.get(1);
         final double z = v.get(2);
-        n.set(2 * m_A * x + m_B * y + m_C * z + m_G,
-              m_B * x + 2 * m_D * y + m_E * z + m_H,
-              m_C * x + m_E * y + 2 * m_F * z + m_I);
+        return Normal.getNormal().set(2 * m_A * x + m_B * y + m_C * z + m_G,
+                                      m_B * x + 2 * m_D * y + m_E * z + m_H,
+                                      m_C * x + m_E * y + 2 * m_F * z + m_I);
     }
     
     public final Point getCentre() {

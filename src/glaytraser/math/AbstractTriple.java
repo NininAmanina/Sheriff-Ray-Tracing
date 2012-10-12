@@ -57,8 +57,9 @@ public abstract class AbstractTriple<T> {
 
     // Note that this is not type-safe -- we can initialise a Point with the XYZ values of
     // a vector, et al.
-    public <U extends AbstractTriple> T set(final U t) {
-        return (T) set(t.value[0], t.value[1], t.value[2]);
+    public <W extends T, U extends AbstractTriple> W set(final U t) {
+        System.arraycopy(t.value, 0, value, 0, 3);
+        return (W) this;
     }
 
     public double get(final int index) {

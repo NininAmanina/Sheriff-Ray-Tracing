@@ -10,7 +10,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
-import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -28,7 +27,7 @@ public class Renderer {
      * @param args
      */
     public static void main(final String [] args) {
-        Node root = Parser.parseScene("tpnonhier.gr");
+        Node root = Parser.parseScene("simple.gr");
     }
 
     static int [] renderScene(final Node root, final BufferedImage image) {

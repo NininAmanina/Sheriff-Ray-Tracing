@@ -46,7 +46,7 @@ public class Node {
 
         success |= rayIntersect(result, m_txRay, calcNormal);
         if(success) {
-            result.getNormal().multiply(m_txToNode);
+            result.transformNormals(m_txToNode);
         }
         return success;
     }

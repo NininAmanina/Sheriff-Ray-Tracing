@@ -3,6 +3,7 @@ package glaytraser.primitive;
 import glaytraser.engine.Node;
 import glaytraser.engine.Ray;
 import glaytraser.engine.Result;
+import glaytraser.math.Normal;
 import glaytraser.math.Point;
 import glaytraser.math.PolyRoots;
 import glaytraser.math.Utils;
@@ -24,6 +25,8 @@ public class Torus extends Node {
     public boolean rayIntersect(final Result result, final Ray ray, final boolean calcNormal) {
         final Vector v1 = Vector.getVector();
         final Point pt = Point.getPoint();
+        final Result newResult = Result.getResult();
+        newResult.setMaterial(getMaterial());
         try {
             final Vector rayVector = ray.getVector();
             final double [] adC = new double [4];
@@ -58,30 +61,19 @@ public class Torus extends Node {
 
             // Retrieve the smallest positive root of the quadratic.
             final double [] roots = PolyRoots.quarticRoots(adC[0], adC[1], adC[2], adC[3]);
-            double dRoot = Double.MAX_VALUE;
+            if(roots == null || roots.length == 0) {
+                return false;
+            }
             for(int index = 0, ii = roots.length; index < ii; ++index) {
                 if(roots[index] > Utils.EPSILON) {
-                    dRoot = Math.min(dRoot, roots[index]);
+                    newResult.addIntersection(roots[index], calculateTorusNormal(result, ray, b, f, roots[index]));
                 }
             }
 
             // If there is a real root to this quadratic, return the intersection
             // point of the ray with the surface.
-            if(result.getT() > dRoot) {
-                result.setT(dRoot);
-                v1.set(ray.getVector());
-                v1.multiply(dRoot);
-                pt.set(ray.getPoint());
-                pt.add(v1);
-                v1.set(m_centre, pt);
-
-                final double g2 = b;
-                final double a2 = v1.get(0);
-                final double b2 = v1.get(1);
-                final double c2 = v1.get(2);
-                final double d2 = v1.dot(v1) - f - g2;
-                final double e2 = d2 + f + f;
-                result.getNormal().set(d2 * a2, d2 * b2, e2 * c2);
+            if(result.getT() > newResult.getT()) {
+                result.set(newResult);
                 result.setMaterial(getMaterial());
                 return true;
             }
@@ -89,7 +81,26 @@ public class Torus extends Node {
         } finally {
             Vector.putVector(v1);
             Point.putPoint(pt);
+            Result.putResult(newResult);
         }
+    }
+
+    private Normal calculateTorusNormal(final Result result, final Ray ray, final double b,
+            final double f, double dRoot) {
+        final Vector v1 = Vector.getVector().set(ray.getVector()).multiply(dRoot);
+        final Point pt = Point.getPoint().set(ray.getPoint()).add(v1);
+        v1.set(m_centre, pt);
+
+        final double g2 = b;
+        final double a2 = v1.get(0);
+        final double b2 = v1.get(1);
+        final double c2 = v1.get(2);
+        final double d2 = v1.dot(v1) - f - g2;
+        final double e2 = d2 + f + f;
+        Vector.putVector(v1);
+        Point.putPoint(pt);
+
+        return Normal.getNormal().set(d2 * a2, d2 * b2, e2 * c2);
     }
 
     public Point getCentre() {

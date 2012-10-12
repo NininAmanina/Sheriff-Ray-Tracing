@@ -75,7 +75,7 @@ public class Camera {
         }
     }
 
-    private void setFile(String file) {
+    private void setFile(final String file) {
         m_file = file;
     }
 

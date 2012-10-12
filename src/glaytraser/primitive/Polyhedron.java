@@ -78,6 +78,8 @@ public class Polyhedron extends Node {
         final Vector v2 = Vector.getVector();
         final Point pt = Point.getPoint();
         final Normal norm = Normal.getNormal();
+        final Result newResult = Result.getResult();
+        newResult.setMaterial(getMaterial());
         try {
             outer: for(int j = 0, jj = m_polygon.size(); j < jj; ++j) {
                 Integer [] poly = m_polygon.get(j);
@@ -108,19 +110,22 @@ public class Polyhedron extends Node {
                     }
                 }
                 // By this step in the algorithm, we've gotten an intersection inside the polygon.
-                if(t > Utils.EPSILON && t < result.getT()) {
-                    result.setT(t);
-                    result.getNormal().set(normal);
-                    result.setMaterial(getMaterial());
+                if(t > Utils.EPSILON) {
+                    newResult.addIntersection(t, normal);
                     success = true;
                 }
             }
-            return success;
+            if(success && newResult.getT() < result.getT()) {
+                result.set(newResult);
+                return true;
+            }
+            return false;
         } finally {
             Vector.putVector(v1);
             Vector.putVector(v2);
             Point.putPoint(pt);
             Normal.putNormal(norm);
+            Result.putResult(newResult);
         }
     }
 }

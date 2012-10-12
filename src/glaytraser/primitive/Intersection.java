@@ -16,12 +16,10 @@ public class Intersection extends Node {
     // This must be overridden by primitives.
     // @result We expect null for the light-source intersection routine
     public boolean rayIntersect(final Result result, final Ray ray, final boolean calcNormal) {
-        final Result r1 = Result.getResult();
-        final Result r2 = Result.getResult();
+        final Result r1 = Result.getResult().set(result);
+        final Result r2 = Result.getResult().set(result);
         try {
-            r1.set(result);
             m_nodeA.intersect(r1, ray, calcNormal);
-            r2.set(result);
             m_nodeB.intersect(r2, ray, calcNormal);
             double tA = r1.getT();
             double tB = r2.getT();
